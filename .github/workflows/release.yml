@@ -3,6 +3,10 @@ name: Release
 # Triggered when a GitHub Release is published targeting the `release` branch.
 # Builds the Cowork plugin .zip, attaches it to the release, bumps the version
 # in plugin.json, commits to `release`, and opens a PR to `main` with auto-merge.
+#
+# Auth strategy:
+#   - Deploy key (DEPLOY_KEY secret) for git push to protected branches
+#   - Default GITHUB_TOKEN for GitHub API operations (PRs, releases)
 
 on:
   release:
@@ -21,10 +25,15 @@ jobs:
         with:
           ref: release
           submodules: recursive
-          # Use a token that can push to protected branches and open PRs.
-          # The default GITHUB_TOKEN cannot push to protected branches.
-          # Options: PAT, deploy key, or GitHub App token (recommended).
-          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Configure SSH for deploy key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Set git remote to SSH
+        run: |
+          git remote set-url origin git@github.com:${{ github.repository }}.git
 
       - name: Extract version from release tag
         id: version
@@ -66,10 +75,11 @@ jobs:
           git push origin release
 
       # ── PR to main ──
+      # Uses default GITHUB_TOKEN for API operations (deploy keys don't have API access)
 
       - name: Open PR from release to main
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
 
@@ -93,7 +103,7 @@ jobs:
 
       - name: Enable auto-merge
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           PR_NUMBER=$(gh pr list --base main --head release --state open --json number --jq '.[0].number')
           if [ -n "$PR_NUMBER" ]; then
