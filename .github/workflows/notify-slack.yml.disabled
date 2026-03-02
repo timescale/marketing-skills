@@ -12,8 +12,7 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     # Only run when the commit looks like a release merge (has the version bump)
-    if: false
-    # Disabled until SLACK_WEBHOOK_URL secret is configured
+    if: contains(github.event.head_commit.message, 'Release v') || contains(github.event.head_commit.message, 'bump version')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
