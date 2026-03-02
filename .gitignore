@@ -9,6 +9,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Claude Code local settings (per-user permissions)
+.claude/settings.local.json
+
 # Skill workspaces (from skill-creator eval runs)
 *-workspace/
 
