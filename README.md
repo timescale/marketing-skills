@@ -1,6 +1,6 @@
-# TigerData Marketing Skills
+# Tiger Data Marketing Skills
 
-A shared plugin marketplace for the TigerData marketing team. Gives Claude specialized knowledge about our brand voice, audience, positioning, terminology, and content quality standards — so it produces better, more on-brand work.
+A shared plugin marketplace for the Tiger Data marketing team. Gives Claude specialized knowledge about our brand voice, audience, positioning, terminology, and content quality standards — so it produces better, more on-brand work.
 
 Works with both **Cowork** (Claude Desktop) and **Claude Code** (CLI).
 
@@ -189,3 +189,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to create new skills, update exis
 ## Questions?
 
 Open a GitHub Issue or ask in the #marketing-tools Slack channel.
+
