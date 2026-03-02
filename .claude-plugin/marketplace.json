@@ -1,0 +1,11 @@
+{
+  "name": "tigerdata-marketing",
+  "description": "TigerData Marketing team plugins — brand voice, content review, SEO, and more.",
+  "plugins": [
+    {
+      "name": "tigerdata-marketing-skills",
+      "path": "plugins/tiger-marketing-skills",
+      "description": "Claude skills for the TigerData marketing team — brand voice, content review, SEO, and more."
+    }
+  ]
+}

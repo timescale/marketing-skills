@@ -1,0 +1,87 @@
+name: Notify Slack on release
+
+# Fires when a release PR merges to main, notifying the team that the new
+# version is live. This ensures the notification reflects when the version is
+# actually available in `main`, not just when the release was drafted.
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    # Only run when the commit looks like a release merge (has the version bump)
+    if: contains(github.event.head_commit.message, 'Release v') || contains(github.event.head_commit.message, 'bump version')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read version from plugin.json
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' plugins/tiger-marketing-skills/.claude-plugin/plugin.json)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+
+      - name: Get release notes
+        id: release_notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # Try to get the release notes from the matching GitHub Release
+          RELEASE_BODY=$(gh release view "v${VERSION}" --json body --jq '.body' 2>/dev/null || echo "")
+
+          if [ -z "$RELEASE_BODY" ]; then
+            echo "No release notes found for v${VERSION}"
+            echo "notes=" >> "$GITHUB_OUTPUT"
+          else
+            # GitHub markdown → Slack mrkdwn conversion
+            python3 - <<'PYEOF' > /tmp/slack_notes.txt
+          import re, os
+
+          text = os.environ.get("RELEASE_BODY", "")
+
+          # Strip HTML comments
+          text = re.sub(r'<!--.*?-->', '', text, flags=re.DOTALL)
+
+          # Headers → bold text
+          text = re.sub(r'^#{1,4}\s+(.+)$', r'*\1*', text, flags=re.MULTILINE)
+
+          # Bold: **text** → *text*
+          text = re.sub(r'\*\*(.+?)\*\*', r'*\1*', text)
+
+          # Links: [text](url) → <url|text>
+          text = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<\2|\1>', text)
+
+          # Bullet points: - item → • item
+          text = re.sub(r'^(\s*)- ', lambda m: m.group(1) + ('◦ ' if len(m.group(1)) >= 2 else '• '), text, flags=re.MULTILINE)
+
+          # Clean up excessive blank lines
+          text = re.sub(r'\n{3,}', '\n\n', text)
+
+          print(text.strip())
+          PYEOF
+          fi
+        env:
+          RELEASE_BODY: ${{ steps.release_notes.outputs.body || '' }}
+
+      - name: Post to Slack
+        if: success()
+        run: |
+          SLACK_NOTES=$(cat /tmp/slack_notes.txt 2>/dev/null || echo "")
+          VERSION="${{ steps.version.outputs.version }}"
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${VERSION}/tigerdata-marketing-skills.zip"
+
+          curl -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg version "$VERSION" \
+              --arg release_url "$RELEASE_URL" \
+              --arg download_url "$DOWNLOAD_URL" \
+              --arg release_notes "$SLACK_NOTES" \
+              '{version: $version, release_url: $release_url, download_url: $download_url, release_notes: $release_notes}'
+            )"

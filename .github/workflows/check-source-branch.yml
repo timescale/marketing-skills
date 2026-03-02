@@ -1,0 +1,25 @@
+name: Check source branch
+
+# Enforces that only the `release` branch can open PRs to `main`.
+# GitHub doesn't natively support filtering PRs by source branch in branch
+# protection rules, so this action serves as the enforcement mechanism.
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify source branch is release
+        run: |
+          if [ "${{ github.head_ref }}" != "release" ]; then
+            echo "❌ PRs to main must come from the 'release' branch."
+            echo "   Got: ${{ github.head_ref }}"
+            echo ""
+            echo "   Merge your changes into 'release' first, then publish a"
+            echo "   GitHub Release to trigger the automated PR to main."
+            exit 1
+          fi
+          echo "✅ Source branch is 'release' — all good."

@@ -1,0 +1,10 @@
+{
+  "name": "tigerdata-marketing-skills",
+  "version": "0.2.0",
+  "description": "Claude skills for the TigerData marketing team — brand voice, content review, SEO, and more.",
+  "author": {
+    "name": "TigerData Marketing"
+  },
+  "repository": "https://github.com/timescale/marketing-skills",
+  "keywords": ["marketing", "brand-voice", "content", "tigerdata", "timescale"]
+}

@@ -1,0 +1,105 @@
+name: Validate Skills
+
+on:
+  pull_request:
+    branches: [main, release]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Validate skill structure
+        # Validates native skills in the plugin's category directories.
+        # Vendor skills are validated upstream in their own repos.
+        run: |
+          ERRORS=0
+          WARNINGS=0
+
+          PLUGIN_DIR="plugins/tiger-marketing-skills"
+          CATEGORIES=("content-creation" "seo" "social-media" "analytics" "meta")
+          VALID_PLATFORMS=("cowork" "claude-code")
+
+          for category in "${CATEGORIES[@]}"; do
+            category_dir="$PLUGIN_DIR/$category"
+            [ -d "$category_dir" ] || continue
+
+            for skill_dir in "$category_dir"/*/; do
+              [ -d "$skill_dir" ] || continue
+              skill_name=$(basename "$skill_dir")
+
+              # Check SKILL.md exists
+              if [ ! -f "$skill_dir/SKILL.md" ]; then
+                echo "❌ $skill_dir: Missing SKILL.md"
+                ERRORS=$((ERRORS + 1))
+                continue
+              fi
+
+              # Check frontmatter has name field
+              if ! head -20 "$skill_dir/SKILL.md" | grep -q "^name:"; then
+                echo "❌ $skill_dir: SKILL.md missing 'name' in frontmatter"
+                ERRORS=$((ERRORS + 1))
+              fi
+
+              # Check frontmatter has description field
+              if ! head -20 "$skill_dir/SKILL.md" | grep -q "^description:"; then
+                echo "❌ $skill_dir: SKILL.md missing 'description' in frontmatter"
+                ERRORS=$((ERRORS + 1))
+              fi
+
+              # Check platforms field exists (warn if missing, not error — backwards compatible)
+              platforms_line=$(head -20 "$skill_dir/SKILL.md" | grep "^platforms:" || echo "")
+              if [ -z "$platforms_line" ]; then
+                echo "⚠️  $skill_dir: SKILL.md missing 'platforms' field (will be treated as universal)"
+                WARNINGS=$((WARNINGS + 1))
+              else
+                # Validate platform values
+                platforms_value=$(echo "$platforms_line" | sed 's/^platforms:\s*//' | tr -d '[],' )
+                for p in $platforms_value; do
+                  valid=false
+                  for vp in "${VALID_PLATFORMS[@]}"; do
+                    if [ "$p" = "$vp" ]; then
+                      valid=true
+                      break
+                    fi
+                  done
+                  if [ "$valid" = false ]; then
+                    echo "❌ $skill_dir: Invalid platform '$p' (valid: ${VALID_PLATFORMS[*]})"
+                    ERRORS=$((ERRORS + 1))
+                  fi
+                done
+              fi
+
+              # Check SKILL.md isn't too long
+              LINE_COUNT=$(wc -l < "$skill_dir/SKILL.md")
+              if [ "$LINE_COUNT" -gt 500 ]; then
+                echo "⚠️  $skill_dir: SKILL.md is $LINE_COUNT lines (recommended: <500). Consider moving content to references/"
+                WARNINGS=$((WARNINGS + 1))
+              fi
+
+              # Check for broken references (files mentioned in SKILL.md that don't exist)
+              while IFS= read -r ref_file; do
+                ref_path=$(cd "$skill_dir" && realpath -m "$ref_file" 2>/dev/null || echo "")
+                if [ -z "$ref_path" ] || [ ! -f "$ref_path" ]; then
+                  echo "❌ $skill_dir: SKILL.md references '$ref_file' but it doesn't exist"
+                  ERRORS=$((ERRORS + 1))
+                fi
+              done < <(grep -oP '(?:\.\./[^\s\)"`'"'"']*)?references/[^\s\)"`'"'"']+' "$skill_dir/SKILL.md" | sort -u)
+
+              echo "✅ $skill_name"
+            done
+          done
+
+          echo ""
+          if [ "$WARNINGS" -gt 0 ]; then
+            echo "Found $WARNINGS warning(s)."
+          fi
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "Found $ERRORS error(s). Please fix before merging."
+            exit 1
+          fi
+
+          echo "All skills validated successfully."

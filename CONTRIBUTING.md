@@ -1,0 +1,204 @@
+# Contributing to Marketing Skills
+
+Everyone on the team is welcome to create new skills or improve existing ones. All changes go through pull requests to the `release` branch so someone can give them a quick review before they go live.
+
+## Setting up for skill development
+
+### Using Cowork (Claude Desktop)
+
+The easiest way to work on skills is with Cowork mode in Claude Desktop. This gives you Claude as a collaborator that can read your skill files, help you write SKILL.md instructions, and test changes in real time.
+
+1. **Clone the repo** (if you haven't already):
+   ```bash
+   git clone https://github.com/timescale/marketing-skills.git
+   ```
+   > **Tip:** If you have the [GitHub CLI](https://cli.github.com/) (`gh`) installed, you can use `gh repo clone timescale/marketing-skills` instead — it handles authentication automatically.
+
+2. **Open Claude Desktop** and start a new **Cowork session** (click the Cowork tab or start a new Cowork conversation).
+
+3. **Select the repo folder:** Cowork will ask you to choose a folder. Navigate to wherever you cloned `marketing-skills/` and select it. This gives Claude read/write access to the skill files.
+
+4. **Start working:** You can now ask Claude things like:
+   - "Create a new skill for LinkedIn articles in the content-creation category"
+   - "Review the brand-voice-writer SKILL.md and suggest improvements"
+   - "Update the terms glossary with these new terms: ..."
+   - "Help me write a SKILL.md for an SEO skill"
+
+Claude can read your existing skills, reference docs, and the `_template/` folder — so it has full context on the repo structure and conventions.
+
+**Tip:** If you have the marketing skills plugin installed, Claude will also have access to those skills while you work. This means you can use the brand-voice-writer skill to help draft content for new skills, or the content-reviewer skill to evaluate reference docs.
+
+### Using Claude Code (CLI)
+
+If you prefer the terminal, you can develop skills with Claude Code:
+
+1. **Clone the repo and set up:**
+   ```bash
+   git clone https://github.com/timescale/marketing-skills.git
+   cd marketing-skills
+   git submodule update --init --recursive
+   ```
+
+2. **Start Claude Code with the plugin loaded:**
+   ```bash
+   claude --plugin-dir plugins/tiger-marketing-skills
+   ```
+
+3. Claude Code has access to the full skill set and can help you create or refine skills.
+
+## Creating a new skill
+
+All skill work happens inside `plugins/tiger-marketing-skills/`. Each skill lives in a category subdirectory.
+
+1. **Copy the template:**
+   ```bash
+   cd plugins/tiger-marketing-skills
+   cp -r _template/ <category>/your-skill-name/
+   # Example: cp -r _template/ content-creation/email-drip-writer/
+   ```
+
+2. **Edit `SKILL.md`:** Fill in the frontmatter (`name`, `platforms`, and `description`) and write the instructions. The template has comments explaining each section.
+
+3. **Set the `platforms` field:** Decide where your skill can run:
+   - `platforms: [cowork, claude-code]` — for skills that only need prompt instructions and reference docs (most skills)
+   - `platforms: [claude-code]` — for skills that require terminal access, file I/O, web crawling, or other CLI capabilities
+   - `platforms: [cowork]` — for skills that use Cowork-specific features (rare)
+
+   **How to decide:** If your skill tells Claude to run commands, process files on disk, crawl websites, or do anything that needs a terminal, it's `[claude-code]` only. If it's purely instructions + reference docs that Claude reads, it works on both platforms.
+
+4. **Add reference docs** (if needed) to the `references/` folder. These are markdown files that Claude reads when it needs deeper context (brand guidelines, glossary, etc.).
+
+5. **Test it:** Try your skill in a Claude conversation to make sure it triggers correctly and produces good output. You don't need a formal test suite — just verify it works on 2-3 realistic prompts.
+
+   **Testing in Cowork:** Skills are loaded from the installed plugin, not from local files. To test a new or modified skill in Cowork, you need to build and install the plugin locally:
+   ```bash
+   cd plugins/tiger-marketing-skills
+   ./build-plugin.sh --target cowork
+   ```
+   Then upload `dist/tigerdata-marketing-skills.zip` from the repo root to Cowork (Browse plugins → My Plugins → + → Upload plugin) and **start a new session** — updated skills only take effect in new sessions, not the current one.
+
+6. **Submit a PR:** Push your branch and open a pull request **targeting the `release` branch**. The PR template includes a checklist to make sure everything's in order. If you're not comfortable with git, ask Claude in Cowork to "help me submit my changes" — the **skill-contributor** skill will walk you through it step by step.
+
+## Updating an existing skill
+
+Same process — edit the files, test, submit a PR to `release`. If you're updating reference docs (like the brand voice guide), see the section below.
+
+## Updating reference docs from Google Drive
+
+When a source document changes in Google Drive:
+
+1. Open the Google Doc
+2. Go to **File > Download > Markdown (.md)**
+3. Review the downloaded file and trim anything not relevant to the skill
+4. Replace the corresponding file in the skill's `references/` folder
+5. Submit a PR
+
+The repo is the source of truth for reference docs. Not everything in a Google Doc needs to go into the skill — just the parts Claude needs to do its job.
+
+## PR checklist
+
+The PR template includes a checklist, but here's what to verify:
+
+- [ ] Skill folder has a `SKILL.md` with valid frontmatter (`name`, `platforms`, and `description`)
+- [ ] `platforms` field is set correctly (see guidance above)
+- [ ] Description is specific about when the skill should trigger
+- [ ] Any files mentioned in `SKILL.md` actually exist (including cross-skill `../` references)
+- [ ] `SKILL.md` is under 500 lines (put longer content in `references/`)
+- [ ] You've tested the skill on at least a couple of realistic prompts
+
+## Skill writing tips
+
+- **Write in imperative form:** "Read the glossary" not "You should read the glossary"
+- **Explain the why:** Instead of "ALWAYS use sentence case," try "Use sentence case for headlines — this matches our brand style and performs better in search results"
+- **Be specific about triggers:** The description field is how Claude decides whether to use your skill. Make it clear and slightly "pushy"
+- **Keep SKILL.md focused:** Core instructions go in SKILL.md. Reference material, lengthy examples, and data go in `references/`
+- **Think about progressive loading:** Claude reads SKILL.md first, then only loads reference docs as needed. Structure accordingly.
+- **Note CLI dependencies explicitly:** If your skill requires terminal access, say so clearly in the SKILL.md (and set `platforms: [claude-code]`). This helps contributors understand what works where.
+
+## Vendor (community) skills
+
+We include curated skills from external repos via git submodules. These live in `plugins/tiger-marketing-skills/vendor/` and are controlled by `vendor-skills.json`.
+
+**To enable or disable a vendor skill:**
+
+1. Open `plugins/tiger-marketing-skills/vendor-skills.json`
+2. Find the skill under the relevant vendor
+3. Set `"enabled": true` or `"enabled": false`
+4. Submit a PR
+
+**To add a new vendor repo:**
+
+1. Add it as a submodule: `git submodule add <repo-url> plugins/tiger-marketing-skills/vendor/<name>`
+2. Add an entry in `vendor-skills.json` under `vendors`
+3. List the skills you want to include with `enabled`, `platforms`, and `notes`
+
+Vendor skills are validated upstream in their own repos — our CI only validates native skills. If a vendor skill has issues, disable it in the config rather than modifying the vendor files.
+
+**Important:** Don't edit files inside `vendor/` directly. Those directories are managed by git submodules and will be overwritten on update. If you need to customize a vendor skill, copy it into a native category directory instead.
+
+## Repo structure
+
+```
+marketing-skills/
+├── .claude-plugin/
+│   └── marketplace.json        ← marketplace registry (lists plugins)
+├── plugins/
+│   └── tiger-marketing-skills/
+│       ├── .claude-plugin/
+│       │   └── plugin.json     ← plugin metadata and version
+│       ├── config.json         ← runtime config (Drive folder ID, etc.)
+│       ├── REFERENCES.md       ← how to fetch reference docs from Google Drive
+│       ├── _template/          ← copy this to create a new skill
+│       ├── content-creation/   ← blog posts, articles, brand writing
+│       ├── seo/                ← search optimization
+│       ├── social-media/       ← social posts, campaigns
+│       ├── analytics/          ← reporting, dashboards
+│       ├── meta/               ← utility skills
+│       ├── vendor/             ← git submodules for community skills
+│       │   └── marketingskills/
+│       ├── vendor-skills.json  ← config: which vendor skills to include
+│       ├── skills/             ← generated flat directory (gitignored)
+│       └── build-plugin.sh     ← builds plugin artifacts
+├── dist/                       ← build output (gitignored)
+├── CONTRIBUTING.md
+└── README.md
+```
+
+Each native skill is a folder inside a category directory under the plugin. The folder name becomes the skill name. The `skills/` and `dist/` directories are auto-generated by the build scripts — don't edit them directly.
+
+## Building locally
+
+You can build the plugin locally to test before releasing:
+
+```bash
+cd plugins/tiger-marketing-skills
+
+# Build everything (Cowork .zip + Claude Code skills/)
+./build-plugin.sh
+
+# Build just the Cowork plugin
+./build-plugin.sh --target cowork --version 0.2.0
+
+# Sync just the Claude Code skills directory
+./build-plugin.sh --target claude-code
+```
+
+The build automatically picks up enabled vendor skills from `vendor-skills.json`. If the vendor submodule isn't checked out, it warns and continues with native skills only.
+
+## Releasing a new version
+
+Changes flow through `release` → `main`:
+
+1. **Merge your PR** into the `release` branch
+2. **Publish a GitHub Release** targeting the `release` branch with a semver tag (e.g. `v1.2.0`)
+3. A GitHub Action will automatically:
+   - Build the Cowork `.zip` and attach it to the release
+   - Bump the version in `plugin.json`
+   - Open a PR from `release` → `main` with auto-merge enabled
+4. Once checks pass, the PR merges to `main` and a Slack notification goes out
+
+Claude Code users just need to `git pull` to get the latest.
+
+## Questions?
+
+Open a GitHub Issue or ask in #marketing-tools on Slack.

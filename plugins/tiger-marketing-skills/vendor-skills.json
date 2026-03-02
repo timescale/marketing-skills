@@ -1,0 +1,38 @@
+{
+  "_comment": "Controls which skills from vendor/ submodules are included in the plugin build. Set 'enabled' to true to include a skill. The 'platforms' field determines which build targets include it.",
+  "vendors": {
+    "marketingskills": {
+      "path": "vendor/marketingskills/skills",
+      "repo": "https://github.com/coreyhaines31/marketingskills",
+      "license": "MIT",
+      "skills": {
+        "ab-test-setup":          { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "A/B experiment design and hypothesis frameworks" },
+        "analytics-tracking":     { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "GA4/GTM tracking plans and UTM conventions" },
+        "cold-email":             { "enabled": true,  "platforms": ["cowork", "claude-code"], "notes": "B2B cold outreach sequences" },
+        "competitor-alternatives": { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "Competitor comparison and alternative pages" },
+        "content-strategy":       { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "SKIP: overlaps with brand-voice-writer" },
+        "copy-editing":           { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "SKIP: overlaps with content-reviewer" },
+        "copywriting":            { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "SKIP: overlaps with brand-voice-writer" },
+        "email-sequence":         { "enabled": true,  "platforms": ["cowork", "claude-code"], "notes": "Automated email flows (onboarding, nurture, re-engagement)" },
+        "form-cro":               { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "Form field and layout optimization" },
+        "free-tool-strategy":     { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "Planning free marketing tools (calculators, generators)" },
+        "launch-strategy":        { "enabled": true,  "platforms": ["cowork", "claude-code"], "notes": "Product launch planning with ORB framework" },
+        "marketing-ideas":        { "enabled": true,  "platforms": ["cowork", "claude-code"], "notes": "139 proven SaaS marketing tactics" },
+        "marketing-psychology":   { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "Behavioral science for marketing decisions" },
+        "onboarding-cro":         { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "Post-signup activation optimization" },
+        "page-cro":               { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "Marketing page conversion optimization" },
+        "paid-ads":               { "enabled": true,  "platforms": ["cowork", "claude-code"], "notes": "Ad campaign planning (Google, Meta, LinkedIn)" },
+        "paywall-upgrade-cro":    { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "In-app upsell and paywall optimization" },
+        "popup-cro":              { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "Lead capture popup optimization" },
+        "pricing-strategy":       { "enabled": true,  "platforms": ["cowork", "claude-code"], "notes": "Pricing tiers and monetization planning" },
+        "product-marketing-context": { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "Foundational PMC documentation" },
+        "programmatic-seo":       { "enabled": false, "platforms": ["claude-code"],            "notes": "SKIP: CLI-dependent, generates page files" },
+        "referral-program":       { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "Referral and affiliate program design" },
+        "schema-markup":          { "enabled": false, "platforms": ["claude-code"],            "notes": "SKIP: CLI-dependent, modifies HTML" },
+        "seo-audit":              { "enabled": false, "platforms": ["claude-code"],            "notes": "SKIP: CLI-dependent, crawls sites" },
+        "signup-flow-cro":        { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "Registration flow optimization" },
+        "social-content":         { "enabled": false, "platforms": ["cowork", "claude-code"], "notes": "SKIP: overlaps with planned social-media skills" }
+      }
+    }
+  }
+}
