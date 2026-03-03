@@ -1,10 +1,15 @@
 {
-  "name": "marketing-skills",
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "tigerdata-marketing",
+  "version": "1.0.0",
   "description": "TigerData Marketing team plugins — brand voice, content review, SEO, and more.",
+  "owner": {
+    "name": "TigerData Marketing"
+  },
   "plugins": [
     {
       "name": "tigerdata-marketing-skills",
-      "path": "plugins/tiger-marketing-skills",
+      "source": "./plugins/tiger-marketing-skills",
       "description": "Claude skills for the TigerData marketing team — brand voice, content review, SEO, and more."
     }
   ]
