@@ -28,3 +28,5 @@ plugins/*/skills/
 
 # Vendor skills are managed via git submodules (plugins/*/vendor/*).
 # Don't gitignore the vendor/ directory — it's tracked by git.
+
+test-slack-format.sh
