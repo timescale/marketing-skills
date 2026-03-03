@@ -5,8 +5,8 @@ name: Release
 # in plugin.json, commits to `release`, and opens a PR to `main` with auto-merge.
 #
 # Auth strategy:
-#   - Deploy key (DEPLOY_KEY secret) for git push to protected branches
-#   - Default GITHUB_TOKEN for GitHub API operations (PRs, releases)
+#   - AUTOMATION_PAT for git push to protected branches and GitHub API operations
+#   - Default GITHUB_TOKEN for uploading release assets
 
 on:
   release:
@@ -24,15 +24,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: release
-
-      - name: Configure SSH for deploy key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
-
-      - name: Set git remote to SSH
-        run: |
-          git remote set-url origin git@github.com:${{ github.repository }}.git
+          token: ${{ secrets.AUTOMATION_PAT }}
 
       - name: Extract version from release tag
         id: version
@@ -74,11 +66,10 @@ jobs:
           git push origin release
 
       # ── PR to main ──
-      # Uses default GITHUB_TOKEN for API operations (deploy keys don't have API access)
 
       - name: Open PR from release to main
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_PAT }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
 
