@@ -1,13 +1,7 @@
 ---
 name: skill-contributor
 platforms: [cowork]
-description: >
-  Guide contributors through submitting skill changes to the marketing-skills repo using git.
-  Use this skill when someone says "help me submit my changes", "how do I push this", "I'm done
-  editing, now what?", "submit my skill", "create a PR", "I need to commit", or any request
-  related to saving, sharing, or submitting their work on skills to the team. Also use when
-  someone seems stuck on the git workflow or mentions branches, commits, or pull requests.
-  This skill is for non-technical contributors who may not be familiar with git.
+description: "Help non-technical contributors submit skill changes to the marketing-skills GitHub repo using a guided, step-by-step git workflow. Use this skill when someone says 'help me submit my changes', 'how do I push this', 'I\u2019m done editing, now what?', 'submit my skill', 'create a PR', 'I need to commit', 'how do I save this', 'share my work', or any request related to saving, sharing, or submitting their work on skills to the team. Also use when someone seems stuck on the git workflow or mentions branches, commits, or pull requests. Walks contributors through branching, committing, pushing, and opening a PR — no git experience required."
 ---
 
 # Skill Contributor — Guided Git Workflow
@@ -61,20 +55,16 @@ Explain the output in plain language: new files (untracked), modified files, whi
 
 ## Step 3: Create a branch
 
-> "Before we save your changes, let's make sure we're starting from the right place and then create a branch. Paste these one at a time:"
+> "Before we save your changes, let's create a branch off `release` (that's our integration branch — all PRs go there, not `main`). Paste this:"
 >
 > ```
-> git checkout release
-> git pull origin release
-> git checkout -b your-name/short-description
+> git checkout -b your-name/short-description release
 > ```
 
 Help them pick a good branch name based on what they changed. Examples:
 - `nicole/update-brand-voice-guide`
 - `jordan/add-linkedin-skill`
 - `corey/fix-glossary-terms`
-
-> **Why `release`?** All PRs in this repo target the `release` branch — not `main`. The `release` branch is where all new work gets merged. `main` only gets updated when a release is published.
 
 ## Step 4: Stage the changed files
 
@@ -124,7 +114,7 @@ If they get an authentication error, help them troubleshoot:
 >
 > [https://github.com/timescale/marketing-skills/compare/release...your-branch-name](https://github.com/timescale/marketing-skills/compare/release...your-branch-name)
 
-Replace `your-branch-name` in both the link text and the URL with the actual branch name from Step 3. Use a markdown link so it's clickable in Cowork. The `release...` prefix ensures the PR targets the `release` branch.
+Replace `your-branch-name` in both the link text and the URL with the actual branch name from Step 3. Use a markdown link so it's clickable in Cowork. The `release...your-branch-name` format ensures the PR targets the `release` branch (not `main`).
 
 Then ask: **"Are you familiar with creating pull requests on GitHub, or would you like me to walk you through what you'll see?"**
 

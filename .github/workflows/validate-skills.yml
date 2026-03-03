@@ -48,6 +48,25 @@ jobs:
               if ! head -20 "$skill_dir/SKILL.md" | grep -q "^description:"; then
                 echo "❌ $skill_dir: SKILL.md missing 'description' in frontmatter"
                 ERRORS=$((ERRORS + 1))
+              else
+                # Check description is NOT multi-line YAML (> or |).
+                # The Cowork plugin UI only renders inline descriptions. Multi-line
+                # block scalars show as blank in the plugin card.
+                desc_line=$(head -20 "$skill_dir/SKILL.md" | grep "^description:")
+                if echo "$desc_line" | grep -qE "^description:\s*[>|]\s*$"; then
+                  echo "❌ $skill_dir: Description uses multi-line YAML syntax (> or |) which renders blank in the Cowork plugin UI. Use a single inline value instead: description: \"Your text here\""
+                  ERRORS=$((ERRORS + 1))
+                fi
+
+                # Check description has minimum length (30+ words).
+                # Good descriptions improve discoverability and show up in the plugin UI.
+                # Extract description value — handles both inline and multi-line formats.
+                desc_text=$(awk '/^description:/{found=1; sub(/^description:\s*>?\s*"?/, ""); sub(/"$/, ""); if(length($0)>0) print; next} found && /^  /{print; next} found{exit}' "$skill_dir/SKILL.md")
+                desc_word_count=$(echo "$desc_text" | wc -w | tr -d ' ')
+                if [ "$desc_word_count" -lt 30 ]; then
+                  echo "⚠️  $skill_dir: Description is only $desc_word_count words (minimum 30 recommended). Short descriptions hurt discoverability and look empty in the plugin UI."
+                  WARNINGS=$((WARNINGS + 1))
+                fi
               fi
 
               # Check platforms field exists (warn if missing, not error — backwards compatible)
