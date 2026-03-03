@@ -132,9 +132,25 @@ If they're NOT familiar, walk them through it:
 
 Help them write a good title and description based on what they changed.
 
-> **Shortcut:** If they have the [GitHub CLI](https://cli.github.com/) (`gh`) installed, they can run this instead:
+### Adding a label
+
+After creating the PR, they need to add a label so it shows up correctly in the release notes. Walk them through it:
+
+> "One more thing — we need to add a label to your PR so it shows up in the release notes. On the PR page in GitHub, look at the right sidebar and click **Labels**. Pick the one that fits:"
+> - **skill** — you added a new skill
+> - **enhancement** — you improved an existing skill
+> - **fix** — you fixed a bug
+> - **docs** — you updated documentation
+
+If they have the GitHub CLI, they can do it from Terminal instead:
+
+```
+gh pr edit --add-label skill
+```
+
+> **Shortcut:** If they have the [GitHub CLI](https://cli.github.com/) (`gh`) installed, they can create the PR and add the label in one step:
 > ```
-> gh pr create --base release --title "Your PR title" --body "Brief description of what changed and why"
+> gh pr create --base release --label skill --title "Your PR title" --body "Brief description of what changed and why"
 > ```
 
 ## Step 8: Celebrate
