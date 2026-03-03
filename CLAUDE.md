@@ -6,6 +6,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A Claude plugin marketplace for the Tiger Data marketing team. It packages marketing skills (brand voice writing, content review, email sequences, etc.) for both **Cowork** (Claude Desktop) and **Claude Code** (CLI). Confidential context (brand voice details, sales frameworks) lives in Google Drive — not in this repo. Skills fetch reference docs at runtime.
 
+## Before Making Any Changes
+
+**Do this before editing any files.** Check the current branch and get onto a feature branch off `release`:
+
+```bash
+# Check current branch
+git branch --show-current
+
+# Switch to release and pull latest
+git checkout release
+git pull origin release
+
+# Create a feature branch
+git checkout -b feature/short-description
+```
+
+Never commit directly to `main` or `release`. All work happens on feature branches, and all PRs target `release`.
+
 ## Build Commands
 
 All build commands run from `plugins/tiger-marketing-skills/`:

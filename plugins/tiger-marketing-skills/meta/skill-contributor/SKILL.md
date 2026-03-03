@@ -61,9 +61,11 @@ Explain the output in plain language: new files (untracked), modified files, whi
 
 ## Step 3: Create a branch
 
-> "Before we save your changes, let's create a branch. This keeps your work separate until it's reviewed. Paste this:"
+> "Before we save your changes, let's make sure we're starting from the right place and then create a branch. Paste these one at a time:"
 >
 > ```
+> git checkout release
+> git pull origin release
 > git checkout -b your-name/short-description
 > ```
 
@@ -71,6 +73,8 @@ Help them pick a good branch name based on what they changed. Examples:
 - `nicole/update-brand-voice-guide`
 - `jordan/add-linkedin-skill`
 - `corey/fix-glossary-terms`
+
+> **Why `release`?** All PRs in this repo target the `release` branch — not `main`. The `release` branch is where all new work gets merged. `main` only gets updated when a release is published.
 
 ## Step 4: Stage the changed files
 
@@ -118,9 +122,9 @@ If they get an authentication error, help them troubleshoot:
 
 > "Last step! Let's create a pull request so someone can review your changes. Click this link:"
 >
-> [https://github.com/timescale/marketing-skills/compare/your-branch-name](https://github.com/timescale/marketing-skills/compare/your-branch-name)
+> [https://github.com/timescale/marketing-skills/compare/release...your-branch-name](https://github.com/timescale/marketing-skills/compare/release...your-branch-name)
 
-Replace `your-branch-name` in both the link text and the URL with the actual branch name from Step 3. Use a markdown link so it's clickable in Cowork.
+Replace `your-branch-name` in both the link text and the URL with the actual branch name from Step 3. Use a markdown link so it's clickable in Cowork. The `release...` prefix ensures the PR targets the `release` branch.
 
 Then ask: **"Are you familiar with creating pull requests on GitHub, or would you like me to walk you through what you'll see?"**
 
@@ -140,7 +144,7 @@ Help them write a good title and description based on what they changed.
 
 > **Shortcut:** If they have the [GitHub CLI](https://cli.github.com/) (`gh`) installed, they can run this instead:
 > ```
-> gh pr create --title "Your PR title" --body "Brief description of what changed and why"
+> gh pr create --base release --title "Your PR title" --body "Brief description of what changed and why"
 > ```
 
 ## Step 8: Celebrate
@@ -163,7 +167,7 @@ If they've already created a branch and need to add more changes:
 
 - **"Not a git repository":** They're in the wrong folder. Go back to Step 0.
 - **"Merge conflict":** This is tricky. Suggest they ask for help in #marketing-tools on Slack.
-- **"Your branch is behind":** Run `git pull --rebase origin main` then try pushing again.
+- **"Your branch is behind":** Run `git pull --rebase origin release` then try pushing again.
 - **"index.lock":** Run `rm .git/index.lock` and try again.
 
 ## Tone
