@@ -33,6 +33,7 @@ jobs:
 
           # Try to get the release notes from the matching GitHub Release
           RELEASE_BODY=$(gh release view "v${VERSION}" --json body --jq '.body' 2>/dev/null || echo "")
+          export RELEASE_BODY
 
           if [ -z "$RELEASE_BODY" ]; then
             echo "No release notes found for v${VERSION}"
