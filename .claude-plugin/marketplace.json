@@ -2,15 +2,18 @@
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "tigerdata-marketing",
   "version": "1.0.0",
-  "description": "TigerData Marketing team plugins — brand voice, content review, SEO, and more.",
+  "description": "Tiger Data Marketing team plugins — brand voice, content review, SEO, and more.",
   "owner": {
-    "name": "TigerData Marketing"
+    "name": "Tiger Data Marketing"
   },
   "plugins": [
     {
       "name": "tigerdata-marketing-skills",
       "source": "./plugins/tiger-marketing-skills",
-      "description": "Claude skills for the TigerData marketing team — brand voice, content review, SEO, and more."
+      "description": "Claude skills for the Tiger Data marketing team — brand voice, content review, SEO, and more.",
+      "author": {
+        "name": "Tiger Data Marketing"
+      }
     },
     {
       "name": "marketingskills",
@@ -18,7 +21,11 @@
         "source": "github",
         "repo": "coreyhaines31/marketingskills"
       },
-      "description": "Community marketing skills — cold email, email sequences, launch strategy, paid ads, pricing, and more."
+      "description": "Community marketing skills — cold email, email sequences, launch strategy, paid ads, pricing, and more.",
+      "author": {
+        "name": "Corey Haines"
+      },
+      "repository": "https://github.com/coreyhaines31/marketingskills"
     }
   ]
 }

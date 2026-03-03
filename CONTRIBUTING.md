@@ -19,7 +19,7 @@ The easiest way to work on skills is with Cowork mode in Claude Desktop. This gi
 3. **Select the repo folder:** Cowork will ask you to choose a folder. Navigate to wherever you cloned `marketing-skills/` and select it. This gives Claude read/write access to the skill files.
 
 4. **Start working:** You can now ask Claude things like:
-   - "Create a new skill for LinkedIn articles in the content-creation category"
+   - "Create a new skill for LinkedIn articles"
    - "Review the brand-voice-writer SKILL.md and suggest improvements"
    - "Update the terms glossary with these new terms: ..."
    - "Help me write a SKILL.md for an SEO skill"
@@ -32,11 +32,10 @@ Claude can read your existing skills, reference docs, and the `_template/` folde
 
 If you prefer the terminal, you can develop skills with Claude Code:
 
-1. **Clone the repo and set up:**
+1. **Clone the repo:**
    ```bash
    git clone https://github.com/timescale/marketing-skills.git
    cd marketing-skills
-   git submodule update --init --recursive
    ```
 
 2. **Start Claude Code with the plugin loaded:**
@@ -48,13 +47,13 @@ If you prefer the terminal, you can develop skills with Claude Code:
 
 ## Creating a new skill
 
-All skill work happens inside `plugins/tiger-marketing-skills/`. Each skill lives in a category subdirectory.
+All skills live in `plugins/tiger-marketing-skills/skills/`. Each skill is its own folder.
 
 1. **Copy the template:**
    ```bash
    cd plugins/tiger-marketing-skills
-   cp -r _template/ <category>/your-skill-name/
-   # Example: cp -r _template/ content-creation/email-drip-writer/
+   cp -r _template/ skills/your-skill-name/
+   # Example: cp -r _template/ skills/email-drip-writer/
    ```
 
 2. **Edit `SKILL.md`:** Fill in the frontmatter (`name`, `platforms`, and `description`) and write the instructions. The template has comments explaining each section.
@@ -75,7 +74,7 @@ All skill work happens inside `plugins/tiger-marketing-skills/`. Each skill live
    cd plugins/tiger-marketing-skills
    ./build-plugin.sh --target cowork
    ```
-   Then upload `dist/tigerdata-marketing-skills.zip` from the repo root to Cowork (Browse plugins → My Plugins → + → Upload plugin) and **start a new session** — updated skills only take effect in new sessions, not the current one.
+   Then upload `dist/tigerdata-marketing-skills-<version>.zip` to Cowork (Browse plugins → My Plugins → + → Upload plugin) and **start a new session** — updated skills only take effect in new sessions, not the current one.
 
 6. **Submit a PR:** Push your branch and open a pull request **targeting the `release` branch**. The PR template includes a checklist to make sure everything's in order. If you're not comfortable with git, ask Claude in Cowork to "help me submit my changes" — the **skill-contributor** skill will walk you through it step by step.
 
@@ -134,33 +133,12 @@ The PR template includes a checklist, but here's what to verify:
 - **Think about progressive loading:** Claude reads SKILL.md first, then only loads reference docs as needed. Structure accordingly.
 - **Note CLI dependencies explicitly:** If your skill requires terminal access, say so clearly in the SKILL.md (and set `platforms: [claude-code]`). This helps contributors understand what works where.
 
-## Vendor (community) skills
-
-We include curated skills from external repos via git submodules. These live in `plugins/tiger-marketing-skills/vendor/` and are controlled by `vendor-skills.json`.
-
-**To enable or disable a vendor skill:**
-
-1. Open `plugins/tiger-marketing-skills/vendor-skills.json`
-2. Find the skill under the relevant vendor
-3. Set `"enabled": true` or `"enabled": false`
-4. Submit a PR
-
-**To add a new vendor repo:**
-
-1. Add it as a submodule: `git submodule add <repo-url> plugins/tiger-marketing-skills/vendor/<name>`
-2. Add an entry in `vendor-skills.json` under `vendors`
-3. List the skills you want to include with `enabled`, `platforms`, and `notes`
-
-Vendor skills are validated upstream in their own repos — our CI only validates native skills. If a vendor skill has issues, disable it in the config rather than modifying the vendor files.
-
-**Important:** Don't edit files inside `vendor/` directly. Those directories are managed by git submodules and will be overwritten on update. If you need to customize a vendor skill, copy it into a native category directory instead.
-
 ## Repo structure
 
 ```
 marketing-skills/
 ├── .claude-plugin/
-│   └── marketplace.json        ← marketplace registry (lists plugins)
+│   └── marketplace.json        ← marketplace registry (our plugin + community plugin)
 ├── plugins/
 │   └── tiger-marketing-skills/
 │       ├── .claude-plugin/
@@ -168,41 +146,32 @@ marketing-skills/
 │       ├── config.json         ← runtime config (Drive folder ID, etc.)
 │       ├── REFERENCES.md       ← how to fetch reference docs from Google Drive
 │       ├── _template/          ← copy this to create a new skill
-│       ├── content-creation/   ← blog posts, articles, brand writing
-│       ├── seo/                ← search optimization
-│       ├── social-media/       ← social posts, campaigns
-│       ├── analytics/          ← reporting, dashboards
-│       ├── meta/               ← utility skills
-│       ├── vendor/             ← git submodules for community skills
-│       │   └── marketingskills/
-│       ├── vendor-skills.json  ← config: which vendor skills to include
-│       ├── skills/             ← generated flat directory (gitignored)
-│       └── build-plugin.sh     ← builds plugin artifacts
+│       ├── build-plugin.sh     ← builds Cowork .zip for manual installs
+│       └── skills/             ← all native skills
+│           ├── brand-voice-writer/
+│           ├── content-reviewer/
+│           ├── doctor/
+│           ├── ghost-paper/
+│           ├── seo-meta-optimizer/
+│           ├── setup/
+│           └── skill-contributor/
 ├── dist/                       ← build output (gitignored)
 ├── CONTRIBUTING.md
 └── README.md
 ```
 
-Each native skill is a folder inside a category directory under the plugin. The folder name becomes the skill name. The `skills/` and `dist/` directories are auto-generated by the build scripts — don't edit them directly.
+Each skill is a folder inside `skills/`. The folder name becomes the skill name.
 
 ## Building locally
 
-You can build the plugin locally to test before releasing:
+You can build the Cowork `.zip` locally to test before releasing:
 
 ```bash
 cd plugins/tiger-marketing-skills
-
-# Build everything (Cowork .zip + Claude Code skills/)
-./build-plugin.sh
-
-# Build just the Cowork plugin
 ./build-plugin.sh --target cowork --version 0.2.0
-
-# Sync just the Claude Code skills directory
-./build-plugin.sh --target claude-code
 ```
 
-The build automatically picks up enabled vendor skills from `vendor-skills.json`. If the vendor submodule isn't checked out, it warns and continues with native skills only.
+The marketplace reads skills directly from the repo, so no build is needed for that install path. The build is only for producing the `.zip` used in manual installs and GitHub releases.
 
 ## Releasing a new version
 
