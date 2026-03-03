@@ -74,7 +74,7 @@ jobs:
           SLACK_NOTES=$(cat /tmp/slack_notes.txt 2>/dev/null || echo "")
           VERSION="${{ steps.version.outputs.version }}"
           RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
-          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${VERSION}/tigerdata-marketing-skills.zip"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${VERSION}/tigerdata-marketing-skills-${VERSION}.zip"
 
           curl -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
             -H "Content-Type: application/json" \
