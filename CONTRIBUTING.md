@@ -8,15 +8,32 @@ Everyone on the team is welcome to create new skills or improve existing ones. A
 
 The easiest way to work on skills is with Cowork mode in Claude Desktop. This gives you Claude as a collaborator that can read your skill files, help you write SKILL.md instructions, and test changes in real time.
 
+1. **Install the `gh` command line tool:** this makes everything easier for working with `git`! Installation instructions at [GitHub CLI](https://cli.github.com/).
+
 1. **Clone the repo** (if you haven't already):
    ```bash
-   git clone https://github.com/timescale/marketing-skills.git
+   gh repo clone timescale/marketing-skills
    ```
-   > **Tip:** If you have the [GitHub CLI](https://cli.github.com/) (`gh`) installed, you can use `gh repo clone timescale/marketing-skills` instead — it handles authentication automatically.
+   <!-- > **Tip:** If you have the [GitHub CLI](https://cli.github.com/) (`gh`) installed, you can use `gh repo clone timescale/marketing-skills` instead — it handles authentication automatically. -->
+
+2. **Set up your name and email for `git`**: If this is your first time using `git` you need to tell it who you are and what email address is associated with your GitHub account. Run these two commands in your terminal:
+```bash
+git config --global user.name "Your Name"
+```
+```bash
+git config --global user.email "your.email@example.com"
+```
+
+2. **Authenticate to GitHub** (if you haven't already): If you haven't used `git` in the terminal before, you will need to authenticate so that you can push changes. Run this command:
+   ```bash
+   gh auth login
+   ```
+
+This will have you sign in via the GitHub website and now `git` will know who you are.
 
 2. **Open Claude Desktop** and start a new **Cowork session** (click the Cowork tab or start a new Cowork conversation).
 
-3. **Select the repo folder:** Cowork will ask you to choose a folder. Navigate to wherever you cloned `marketing-skills/` and select it. This gives Claude read/write access to the skill files.
+3. **Select the repo folder:** Cowork has the option to "work in a folder". Navigate to wherever you cloned `marketing-skills/` and select it. This gives Claude read/write access to the skill files.
 
 4. **Start working:** You can now ask Claude things like:
    - "Create a new skill for LinkedIn articles"
