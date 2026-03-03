@@ -81,7 +81,7 @@ git add plugins/tiger-marketing-skills/skills/skill-name/SKILL.md
 
 If they changed multiple files, give them each `git add` command separately, or use a combined command:
 ```
-git add plugins/tiger-marketing-skills/skills/skill-name/SKILL.md plugins/tiger-marketing-skills/skills/skill-name/references/some-file.md
+git add plugins/tiger-marketing-skills/skills/skill-name/SKILL.md plugins/tiger-marketing-skills/skills/skill-name/REFERENCES.md
 ```
 
 ## Step 5: Commit
