@@ -72,7 +72,7 @@ jobs:
           print(text.strip())
           PYEOF
           fi
-          
+
       - name: Post to Slack
         if: success()
         run: |
@@ -80,6 +80,7 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${VERSION}/tigerdata-marketing-skills-${VERSION}.zip"
+          INSTALL_URL="https://github.com/${{ github.repository }}/blob/main/INSTALL.md"
 
           # Use jq to build the complex Block Kit JSON safely
           PAYLOAD=$(jq -n \
@@ -87,6 +88,7 @@ jobs:
             --arg notes "$SLACK_NOTES" \
             --arg rel_url "$RELEASE_URL" \
             --arg dl_url "$DOWNLOAD_URL" \
+            --arg install_url "$INSTALL_URL" \
             '{
               "text": "New release: v\($ver) is now available.",
               "blocks": [
@@ -99,16 +101,18 @@ jobs:
                   "text": { "type": "mrkdwn", "text": $notes }
                 },
                 {
-                  "type": "header",
-                  "text": { "type": "plain_text", "text": "How to Update"}
-                },
-                {
                   "type": "section",
-                  "text": { "type": "mrkdwn", "text": "1. Download the zip file using the button below \n 2. In Claude Desktop (Cowork) → Customize → Personal plugins  →  + → Upload plugin \n 3. Select the zip file — it replaces your old version "}
+                  "text": { "type": "mrkdwn", "text": "If you installed via the marketplace, this update will arrive automatically within 24 hours — or check manually in *Customize → Personal → ··· → Check for updates*.\n\nNew here? See the install guide for a quick walkthrough with screenshots." }
                 },
                 {
                   "type": "actions",
                   "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "📖 Install Guide" },
+                      "url": $install_url,
+                      "style": "primary"
+                    },
                     {
                       "type": "button",
                       "text": { "type": "plain_text", "text": "View Release" },
@@ -117,8 +121,7 @@ jobs:
                     {
                       "type": "button",
                       "text": { "type": "plain_text", "text": "📦 Download .zip" },
-                      "url": $dl_url,
-                      "style": "primary"
+                      "url": $dl_url
                     }
                   ]
                 },
