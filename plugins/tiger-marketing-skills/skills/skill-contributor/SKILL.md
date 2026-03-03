@@ -76,12 +76,12 @@ Help them pick a good branch name based on what they changed. Examples:
 
 List the specific files based on what `git status` showed. For example:
 ```
-git add category/skill-name/SKILL.md
+git add plugins/tiger-marketing-skills/skills/skill-name/SKILL.md
 ```
 
 If they changed multiple files, give them each `git add` command separately, or use a combined command:
 ```
-git add category/skill-name/SKILL.md category/skill-name/some-other-file.md
+git add plugins/tiger-marketing-skills/skills/skill-name/SKILL.md plugins/tiger-marketing-skills/skills/skill-name/references/some-file.md
 ```
 
 ## Step 5: Commit

@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Repo Is
 
-A Claude plugin marketplace for the Tiger Data marketing team. It packages marketing skills (brand voice writing, content review, email sequences, etc.) for both **Cowork** (Claude Desktop) and **Claude Code** (CLI). Confidential context (brand voice details, sales frameworks) lives in Google Drive — not in this repo. Skills fetch reference docs at runtime.
+A Claude plugin marketplace for the Tiger Data marketing team. It packages marketing skills (brand voice writing, content review, SEO, etc.) for both **Cowork** (Claude Desktop) and **Claude Code** (CLI). Confidential context (brand voice details, sales frameworks) lives in Google Drive — not in this repo. Skills fetch reference docs at runtime.
+
+The marketplace also lists a community plugin ([marketingskills](https://github.com/coreyhaines31/marketingskills) by Corey Haines) as a separate install. Users can install it alongside our plugin if they want cold email, launch strategy, paid ads, and other community skills.
 
 ## Before Making Any Changes
 
@@ -26,23 +28,19 @@ Never commit directly to `main` or `release`. All work happens on feature branch
 
 ## Build Commands
 
+The build script is only needed for producing the Cowork `.zip` for manual installs and releases. The marketplace reads skills directly from the repo — no build step required.
+
 All build commands run from `plugins/tiger-marketing-skills/`:
 
 ```bash
-# Build both Cowork .zip and Claude Code skills/ directory
-./build-plugin.sh
-
-# Build only the Cowork plugin .zip
+# Build the Cowork plugin .zip
 ./build-plugin.sh --target cowork
 
-# Build only the Claude Code skills/ flat directory
-./build-plugin.sh --target claude-code
-
 # Build with a specific version
-./build-plugin.sh --version 1.2.0
+./build-plugin.sh --target cowork --version 1.2.0
 ```
 
-Output: `dist/tigerdata-marketing-skills.zip` (Cowork) and `plugins/tiger-marketing-skills/skills/` (Claude Code, gitignored).
+Output: `dist/tigerdata-marketing-skills-<version>.zip` (Cowork manual install artifact).
 
 ## Validation
 
@@ -64,28 +62,28 @@ plugins/tiger-marketing-skills/
 ├── config.json                   ← runtime config (Google Drive folder ID)
 ├── REFERENCES.md                 ← how skills fetch docs from Google Drive
 ├── _template/                    ← copy to create new skills
-├── build-plugin.sh               ← build script (produces both targets)
-├── vendor-skills.json            ← controls which vendor skills are included
-├── vendor/marketingskills/       ← git submodule (coreyhaines31/marketingskills)
-├── <category>/<skill-name>/      ← native skills organized by category
-│   ├── SKILL.md                  ← frontmatter + instructions (the skill itself)
-│   └── references/               ← markdown reference docs Claude reads at runtime
-└── skills/                       ← generated flat output (gitignored)
+├── build-plugin.sh               ← build script (produces Cowork .zip)
+└── skills/                       ← all native skills (flat directory, committed)
+    ├── brand-voice-writer/
+    ├── content-reviewer/
+    ├── doctor/
+    ├── ghost-paper/
+    ├── seo-meta-optimizer/
+    ├── setup/
+    └── skill-contributor/
 ```
 
-### Skill categories (native)
+### How skills are discovered
 
-Skills live in category subdirectories: `content-creation/`, `seo/`, `social-media/`, `analytics/`, `meta/`. The folder name inside a category becomes the skill name.
+Cowork and Claude Code read skills from the flat `skills/` directory inside the plugin. Each skill is a folder containing a `SKILL.md` (frontmatter + instructions) and optionally a `references/` directory with markdown docs Claude reads at runtime.
 
 ### How the build works
 
-`build-plugin.sh` collects native skills from category dirs and enabled vendor skills from submodules (filtered by `vendor-skills.json`), then:
-- For Cowork: packages into a `.zip` (only cowork-compatible skills)
-- For Claude Code: copies into `skills/` flat directory (all compatible skills)
+`build-plugin.sh` collects skills from `skills/`, filters by platform compatibility, and packages them into a `.zip` for manual Cowork installs. The marketplace reads `skills/` directly from the repo, so no build is needed for that path.
 
-### Vendor skills
+### Community skills
 
-Community skills from external repos via git submodules in `vendor/`. Controlled by `vendor-skills.json` — toggle `"enabled": true/false`. Never edit files inside `vendor/` directly; copy to a native category if customization is needed.
+Community skills from [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) are listed as a separate plugin in `marketplace.json`. Users install them independently through the marketplace — they are not bundled into our plugin.
 
 ## Branching and Release Flow
 
@@ -99,7 +97,7 @@ Release process: merge to `release` → publish GitHub Release with semver tag (
 
 ## Creating a New Skill
 
-1. Copy `_template/` to `<category>/your-skill-name/`
+1. Copy `_template/` to `skills/your-skill-name/`
 2. Edit `SKILL.md`: fill in frontmatter (`name`, `platforms`, `description`) and write instructions
 3. Set `platforms` correctly: `[cowork, claude-code]` for instruction-only skills, `[claude-code]` for skills requiring terminal/file access
 4. Add reference docs to `references/` if needed
@@ -111,10 +109,3 @@ Release process: merge to `release` → publish GitHub Release with semver tag (
 - SKILL.md contains core instructions; lengthy reference material goes in `references/`
 - The `description` field in frontmatter controls when the skill triggers — make it specific
 - Keep SKILL.md under 500 lines
-
-## Git Submodules
-
-After cloning, initialize submodules:
-```bash
-git submodule update --init --recursive
-```
