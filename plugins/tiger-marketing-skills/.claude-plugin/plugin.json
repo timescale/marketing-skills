@@ -1,6 +1,6 @@
 {
   "name": "tigerdata-marketing-skills",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Claude skills for the TigerData marketing team — brand voice, content review, SEO, and more.",
   "author": {
     "name": "TigerData Marketing"
