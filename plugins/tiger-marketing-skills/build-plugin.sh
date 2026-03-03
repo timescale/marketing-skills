@@ -2,25 +2,20 @@
 set -euo pipefail
 
 # TigerData Marketing Skills — Plugin Builder
-# Assembles the plugin's skills into distributable formats.
+# Assembles the plugin's skills into a Cowork .zip for manual install / releases.
 #
-# This script lives inside the plugin directory (plugins/tiger-marketing-skills/)
-# and operates relative to that location. Build artifacts go to dist/ at the
-# repo root for easy pickup by GitHub Actions.
+# The marketplace reads directly from the repo (skills/ directory), so the main
+# use of this script is to produce .zip files for manual installs and GitHub
+# Releases.
 #
 # Usage:
-#   ./build-plugin.sh                              # build for all targets
-#   ./build-plugin.sh --target cowork              # Cowork .zip only (excludes claude-code-only skills)
-#   ./build-plugin.sh --target claude-code         # sync skills/ for Claude Code (all skills)
-#   ./build-plugin.sh --target all                 # both (default)
+#   ./build-plugin.sh                              # build Cowork .zip
+#   ./build-plugin.sh --target cowork              # same (explicit)
 #   ./build-plugin.sh --version 1.2.0              # override version
-#   ./build-plugin.sh --target cowork --version 1.2.0
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-SKILL_CATEGORIES=("content-creation" "seo" "social-media" "analytics" "meta")
 PLUGIN_NAME="tigerdata-marketing-skills"
-VENDOR_CONFIG="$SCRIPT_DIR/vendor-skills.json"
 
 # Read version from plugin.json if it exists, otherwise fall back to 0.1.0
 if [ -f "$SCRIPT_DIR/.claude-plugin/plugin.json" ] && command -v jq &> /dev/null; then
@@ -41,7 +36,7 @@ error() { echo -e "${RED}[✗]${NC} $1" >&2; }
 
 # ── Parse args ──
 VERSION="$DEFAULT_VERSION"
-TARGET="all"
+TARGET="cowork"
 while [[ $# -gt 0 ]]; do
   case $1 in
     --version) VERSION="$2"; shift 2 ;;
@@ -50,13 +45,12 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "$TARGET" != "cowork" && "$TARGET" != "claude-code" && "$TARGET" != "all" ]]; then
-  error "Invalid target: $TARGET (must be cowork, claude-code, or all)"
+if [[ "$TARGET" != "cowork" ]]; then
+  error "Invalid target: $TARGET (only 'cowork' is supported — the marketplace reads skills/ directly)"
   exit 1
 fi
 
-# ── Helper: collect native skills with optional platform filter ──
-# Sets SKILL_COUNT as a side effect (avoids stdout conflicts with info/warn)
+# ── Helper: collect skills from skills/ with optional platform filter ──
 collect_skills() {
   local dest_dir="$1"
   local platform_filter="${2:-}"
@@ -64,96 +58,28 @@ collect_skills() {
 
   mkdir -p "$dest_dir"
 
-  for category in "${SKILL_CATEGORIES[@]}"; do
-    category_dir="$SCRIPT_DIR/$category"
-    [ -d "$category_dir" ] || continue
+  for skill_dir in "$SCRIPT_DIR/skills"/*/; do
+    [ -d "$skill_dir" ] || continue
+    skill_name=$(basename "$skill_dir")
 
-    for skill_dir in "$category_dir"/*/; do
-      [ -d "$skill_dir" ] || continue
-      skill_name=$(basename "$skill_dir")
+    # Must have a SKILL.md
+    [ -f "$skill_dir/SKILL.md" ] || continue
 
-      # Must have a SKILL.md
-      [ -f "$skill_dir/SKILL.md" ] || continue
-
-      # Platform filtering
-      if [ -n "$platform_filter" ]; then
-        platforms_line=$(head -20 "$skill_dir/SKILL.md" | grep "^platforms:" || echo "")
-        if [ -n "$platforms_line" ]; then
-          if ! echo "$platforms_line" | grep -q "$platform_filter"; then
-            warn "  Skipped $skill_name (not compatible with $platform_filter)"
-            continue
-          fi
-        fi
-        # No platforms field = universal, include for any filter
-      fi
-
-      cp -r "$skill_dir" "$dest_dir/$skill_name"
-      info "  Added skill: $skill_name"
-      SKILL_COUNT=$((SKILL_COUNT + 1))
-    done
-  done
-}
-
-# ── Helper: collect vendor skills from vendor-skills.json ──
-# Reads the config, finds enabled skills, filters by platform, copies them.
-# Adds to SKILL_COUNT (call after collect_skills or reset SKILL_COUNT first).
-collect_vendor_skills() {
-  local dest_dir="$1"
-  local platform_filter="${2:-}"
-
-  if [ ! -f "$VENDOR_CONFIG" ]; then
-    warn "  No vendor-skills.json found, skipping vendor skills"
-    return
-  fi
-
-  # Check if jq is available
-  if ! command -v jq &> /dev/null; then
-    warn "  jq not found, skipping vendor skills (install jq to enable)"
-    return
-  fi
-
-  mkdir -p "$dest_dir"
-
-  # Iterate over each vendor
-  for vendor in $(jq -r '.vendors | keys[]' "$VENDOR_CONFIG"); do
-    vendor_path=$(jq -r ".vendors[\"$vendor\"].path" "$VENDOR_CONFIG")
-    vendor_dir="$SCRIPT_DIR/$vendor_path"
-
-    if [ ! -d "$vendor_dir" ]; then
-      warn "  Vendor directory not found: $vendor_path (run 'git submodule update --init')"
-      continue
-    fi
-
-    info "  Vendor: $vendor"
-
-    # Iterate over enabled skills for this vendor
-    for skill_name in $(jq -r ".vendors[\"$vendor\"].skills | to_entries[] | select(.value.enabled == true) | .key" "$VENDOR_CONFIG"); do
-      skill_dir="$vendor_dir/$skill_name"
-
-      if [ ! -d "$skill_dir" ] || [ ! -f "$skill_dir/SKILL.md" ]; then
-        warn "    Skipped $skill_name (not found in vendor repo)"
-        continue
-      fi
-
-      # Platform filtering using the config (not the SKILL.md frontmatter)
-      if [ -n "$platform_filter" ]; then
-        platforms=$(jq -r ".vendors[\"$vendor\"].skills[\"$skill_name\"].platforms | join(\",\")" "$VENDOR_CONFIG")
-        if ! echo "$platforms" | grep -q "$platform_filter"; then
-          warn "    Skipped $skill_name (not compatible with $platform_filter)"
+    # Platform filtering
+    if [ -n "$platform_filter" ]; then
+      platforms_line=$(head -20 "$skill_dir/SKILL.md" | grep "^platforms:" || echo "")
+      if [ -n "$platforms_line" ]; then
+        if ! echo "$platforms_line" | grep -q "$platform_filter"; then
+          warn "  Skipped $skill_name (not compatible with $platform_filter)"
           continue
         fi
       fi
+      # No platforms field = universal, include for any filter
+    fi
 
-      # Copy the skill, avoiding conflicts with native skills
-      if [ -d "$dest_dir/$skill_name" ]; then
-        warn "    Skipped $skill_name (name conflicts with native skill)"
-        continue
-      fi
-
-      cp -r "$skill_dir" "$dest_dir/$skill_name"
-      info "    Added vendor skill: $skill_name"
-      SKILL_COUNT=$((SKILL_COUNT + 1))
-    done
+    cp -r "$skill_dir" "$dest_dir/$skill_name"
+    info "  Added skill: $skill_name"
+    SKILL_COUNT=$((SKILL_COUNT + 1))
   done
 }
 
@@ -186,15 +112,10 @@ EOF
   [ -f "$SCRIPT_DIR/config.json" ] && cp "$SCRIPT_DIR/config.json" "$BUILD_DIR/config.json"
   [ -f "$SCRIPT_DIR/REFERENCES.md" ] && cp "$SCRIPT_DIR/REFERENCES.md" "$BUILD_DIR/REFERENCES.md"
 
-  # Collect native skills (cowork-compatible only)
+  # Collect skills (cowork-compatible only)
   collect_skills "$BUILD_DIR/skills" "cowork"
-  local native_count=$SKILL_COUNT
 
-  # Collect vendor skills (cowork-compatible only)
-  collect_vendor_skills "$BUILD_DIR/skills" "cowork"
-  local total_count=$SKILL_COUNT
-
-  if [ "$total_count" -eq 0 ]; then
+  if [ "$SKILL_COUNT" -eq 0 ]; then
     error "No Cowork-compatible skills found!"
     return 1
   fi
@@ -203,7 +124,11 @@ EOF
   cat > "$BUILD_DIR/README.md" <<'READMEEOF'
 # TigerData Marketing Skills
 
-Claude skills for the TigerData marketing team. Gives Claude specialized knowledge about our brand voice, audience, positioning, terminology, and content quality standards. Also includes curated community skills for marketing strategy, email, ads, and more.
+Claude skills for the TigerData marketing team. Gives Claude specialized knowledge about our brand voice, audience, positioning, terminology, and content quality standards.
+
+## Community Skills
+
+For additional marketing skills (cold email, launch strategy, paid ads, etc.), install the **marketingskills** plugin from the same marketplace.
 
 ## Optional: Tiger Den MCP server
 
@@ -223,60 +148,11 @@ READMEEOF
   cp "$TMP_ZIP" "$DIST_DIR/${ZIP_FILENAME}"
   rm -f "$TMP_ZIP"
 
-  info "Cowork plugin: $DIST_DIR/${ZIP_FILENAME} ($native_count native + $((total_count - native_count)) vendor = $total_count skills)"
+  info "Cowork plugin: $DIST_DIR/${ZIP_FILENAME} ($SKILL_COUNT skills)"
 }
 
-# ── Build Claude Code plugin (sync skills/ directory) ──
-build_claude_code() {
-  info "Syncing skills/ for Claude Code..."
-
-  # Update the version in the plugin's plugin.json
-  if [ -f "$SCRIPT_DIR/.claude-plugin/plugin.json" ]; then
-    if command -v jq &> /dev/null; then
-      jq --arg version "$VERSION" '.version = $version' \
-        "$SCRIPT_DIR/.claude-plugin/plugin.json" > "$SCRIPT_DIR/.claude-plugin/plugin.json.tmp" \
-        && mv "$SCRIPT_DIR/.claude-plugin/plugin.json.tmp" "$SCRIPT_DIR/.claude-plugin/plugin.json"
-    else
-      sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${VERSION}\"/" \
-        "$SCRIPT_DIR/.claude-plugin/plugin.json"
-    fi
-    info "Updated .claude-plugin/plugin.json to v${VERSION}"
-  fi
-
-  # Clean and recreate skills/ directory
-  rm -rf "$SCRIPT_DIR/skills"
-  mkdir -p "$SCRIPT_DIR/skills"
-
-  # Collect all native skills (no platform filter — Claude Code gets everything)
-  collect_skills "$SCRIPT_DIR/skills" ""
-  local native_count=$SKILL_COUNT
-
-  # Collect all vendor skills (no platform filter)
-  collect_vendor_skills "$SCRIPT_DIR/skills" ""
-  local total_count=$SKILL_COUNT
-
-  if [ "$total_count" -eq 0 ]; then
-    error "No skills found!"
-    return 1
-  fi
-
-  info "Claude Code plugin: skills/ directory synced ($native_count native + $((total_count - native_count)) vendor = $total_count skills)"
-}
-
-# ── Run targets ──
-case "$TARGET" in
-  cowork)
-    build_cowork
-    ;;
-  claude-code)
-    build_claude_code
-    ;;
-  all)
-    build_cowork
-    echo ""
-    build_claude_code
-    ;;
-esac
+# ── Run ──
+build_cowork
 
 echo ""
-info "Done! Build complete for target: $TARGET"
+info "Done!"

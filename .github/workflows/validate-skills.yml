@@ -9,107 +9,95 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Validate skill structure
-        # Validates native skills in the plugin's category directories.
-        # Vendor skills are validated upstream in their own repos.
+        # Validates native skills in plugins/tiger-marketing-skills/skills/.
         run: |
           ERRORS=0
           WARNINGS=0
 
-          PLUGIN_DIR="plugins/tiger-marketing-skills"
-          CATEGORIES=("content-creation" "seo" "social-media" "analytics" "meta")
-          VALID_PLATFORMS=("cowork" "claude-code")
+          SKILLS_DIR="plugins/tiger-marketing-skills/skills"
 
-          for category in "${CATEGORIES[@]}"; do
-            category_dir="$PLUGIN_DIR/$category"
-            [ -d "$category_dir" ] || continue
+          for skill_dir in "$SKILLS_DIR"/*/; do
+            [ -d "$skill_dir" ] || continue
+            skill_name=$(basename "$skill_dir")
 
-            for skill_dir in "$category_dir"/*/; do
-              [ -d "$skill_dir" ] || continue
-              skill_name=$(basename "$skill_dir")
+            # Check SKILL.md exists
+            if [ ! -f "$skill_dir/SKILL.md" ]; then
+              echo "❌ $skill_dir: Missing SKILL.md"
+              ERRORS=$((ERRORS + 1))
+              continue
+            fi
 
-              # Check SKILL.md exists
-              if [ ! -f "$skill_dir/SKILL.md" ]; then
-                echo "❌ $skill_dir: Missing SKILL.md"
+            # Check frontmatter has name field
+            if ! head -20 "$skill_dir/SKILL.md" | grep -q "^name:"; then
+              echo "❌ $skill_dir: SKILL.md missing 'name' in frontmatter"
+              ERRORS=$((ERRORS + 1))
+            fi
+
+            # Check frontmatter has description field
+            if ! head -20 "$skill_dir/SKILL.md" | grep -q "^description:"; then
+              echo "❌ $skill_dir: SKILL.md missing 'description' in frontmatter"
+              ERRORS=$((ERRORS + 1))
+            else
+              # Check description is NOT multi-line YAML (> or |).
+              # The Cowork plugin UI only renders inline descriptions. Multi-line
+              # block scalars show as blank in the plugin card.
+              desc_line=$(head -20 "$skill_dir/SKILL.md" | grep "^description:")
+              if echo "$desc_line" | grep -qE "^description:\s*[>|]\s*$"; then
+                echo "❌ $skill_dir: Description uses multi-line YAML syntax (> or |) which renders blank in the Cowork plugin UI. Use a single inline value instead: description: \"Your text here\""
                 ERRORS=$((ERRORS + 1))
-                continue
               fi
 
-              # Check frontmatter has name field
-              if ! head -20 "$skill_dir/SKILL.md" | grep -q "^name:"; then
-                echo "❌ $skill_dir: SKILL.md missing 'name' in frontmatter"
-                ERRORS=$((ERRORS + 1))
-              fi
-
-              # Check frontmatter has description field
-              if ! head -20 "$skill_dir/SKILL.md" | grep -q "^description:"; then
-                echo "❌ $skill_dir: SKILL.md missing 'description' in frontmatter"
-                ERRORS=$((ERRORS + 1))
-              else
-                # Check description is NOT multi-line YAML (> or |).
-                # The Cowork plugin UI only renders inline descriptions. Multi-line
-                # block scalars show as blank in the plugin card.
-                desc_line=$(head -20 "$skill_dir/SKILL.md" | grep "^description:")
-                if echo "$desc_line" | grep -qE "^description:\s*[>|]\s*$"; then
-                  echo "❌ $skill_dir: Description uses multi-line YAML syntax (> or |) which renders blank in the Cowork plugin UI. Use a single inline value instead: description: \"Your text here\""
-                  ERRORS=$((ERRORS + 1))
-                fi
-
-                # Check description has minimum length (30+ words).
-                # Good descriptions improve discoverability and show up in the plugin UI.
-                # Extract description value — handles both inline and multi-line formats.
-                desc_text=$(awk '/^description:/{found=1; sub(/^description:\s*>?\s*"?/, ""); sub(/"$/, ""); if(length($0)>0) print; next} found && /^  /{print; next} found{exit}' "$skill_dir/SKILL.md")
-                desc_word_count=$(echo "$desc_text" | wc -w | tr -d ' ')
-                if [ "$desc_word_count" -lt 30 ]; then
-                  echo "⚠️  $skill_dir: Description is only $desc_word_count words (minimum 30 recommended). Short descriptions hurt discoverability and look empty in the plugin UI."
-                  WARNINGS=$((WARNINGS + 1))
-                fi
-              fi
-
-              # Check platforms field exists (warn if missing, not error — backwards compatible)
-              platforms_line=$(head -20 "$skill_dir/SKILL.md" | grep "^platforms:" || echo "")
-              if [ -z "$platforms_line" ]; then
-                echo "⚠️  $skill_dir: SKILL.md missing 'platforms' field (will be treated as universal)"
+              # Check description has minimum length (30+ words).
+              desc_text=$(awk '/^description:/{found=1; sub(/^description:\s*>?\s*"?/, ""); sub(/"$/, ""); if(length($0)>0) print; next} found && /^  /{print; next} found{exit}' "$skill_dir/SKILL.md")
+              desc_word_count=$(echo "$desc_text" | wc -w | tr -d ' ')
+              if [ "$desc_word_count" -lt 30 ]; then
+                echo "⚠️  $skill_dir: Description is only $desc_word_count words (minimum 30 recommended). Short descriptions hurt discoverability and look empty in the plugin UI."
                 WARNINGS=$((WARNINGS + 1))
-              else
-                # Validate platform values
-                platforms_value=$(echo "$platforms_line" | sed 's/^platforms:\s*//' | tr -d '[],' )
-                for p in $platforms_value; do
-                  valid=false
-                  for vp in "${VALID_PLATFORMS[@]}"; do
-                    if [ "$p" = "$vp" ]; then
-                      valid=true
-                      break
-                    fi
-                  done
-                  if [ "$valid" = false ]; then
-                    echo "❌ $skill_dir: Invalid platform '$p' (valid: ${VALID_PLATFORMS[*]})"
-                    ERRORS=$((ERRORS + 1))
+              fi
+            fi
+
+            # Check platforms field exists (warn if missing, not error — backwards compatible)
+            platforms_line=$(head -20 "$skill_dir/SKILL.md" | grep "^platforms:" || echo "")
+            if [ -z "$platforms_line" ]; then
+              echo "⚠️  $skill_dir: SKILL.md missing 'platforms' field (will be treated as universal)"
+              WARNINGS=$((WARNINGS + 1))
+            else
+              # Validate platform values
+              platforms_value=$(echo "$platforms_line" | sed 's/^platforms:\s*//' | tr -d '[],' )
+              for p in $platforms_value; do
+                valid=false
+                for vp in "cowork" "claude-code"; do
+                  if [ "$p" = "$vp" ]; then
+                    valid=true
+                    break
                   fi
                 done
-              fi
-
-              # Check SKILL.md isn't too long
-              LINE_COUNT=$(wc -l < "$skill_dir/SKILL.md")
-              if [ "$LINE_COUNT" -gt 500 ]; then
-                echo "⚠️  $skill_dir: SKILL.md is $LINE_COUNT lines (recommended: <500). Consider moving content to references/"
-                WARNINGS=$((WARNINGS + 1))
-              fi
-
-              # Check for broken references (files mentioned in SKILL.md that don't exist)
-              while IFS= read -r ref_file; do
-                ref_path=$(cd "$skill_dir" && realpath -m "$ref_file" 2>/dev/null || echo "")
-                if [ -z "$ref_path" ] || [ ! -f "$ref_path" ]; then
-                  echo "❌ $skill_dir: SKILL.md references '$ref_file' but it doesn't exist"
+                if [ "$valid" = false ]; then
+                  echo "❌ $skill_dir: Invalid platform '$p' (valid: cowork claude-code)"
                   ERRORS=$((ERRORS + 1))
                 fi
-              done < <(grep -oP '(?:\.\./[^\s\)"`'"'"']*)?references/[^\s\)"`'"'"']+' "$skill_dir/SKILL.md" | sort -u)
+              done
+            fi
 
-              echo "✅ $skill_name"
-            done
+            # Check SKILL.md isn't too long
+            LINE_COUNT=$(wc -l < "$skill_dir/SKILL.md")
+            if [ "$LINE_COUNT" -gt 500 ]; then
+              echo "⚠️  $skill_dir: SKILL.md is $LINE_COUNT lines (recommended: <500). Consider moving content to references/"
+              WARNINGS=$((WARNINGS + 1))
+            fi
+
+            # Check for broken references (files mentioned in SKILL.md that don't exist)
+            while IFS= read -r ref_file; do
+              ref_path=$(cd "$skill_dir" && realpath -m "$ref_file" 2>/dev/null || echo "")
+              if [ -z "$ref_path" ] || [ ! -f "$ref_path" ]; then
+                echo "❌ $skill_dir: SKILL.md references '$ref_file' but it doesn't exist"
+                ERRORS=$((ERRORS + 1))
+              fi
+            done < <(grep -oP '(?:\.\./[^\s\)"`'"'"']*)?references/[^\s\)"`'"'"']+' "$skill_dir/SKILL.md" | sort -u)
+
+            echo "✅ $skill_name"
           done
 
           echo ""
