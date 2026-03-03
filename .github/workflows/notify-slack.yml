@@ -84,6 +84,7 @@ jobs:
             --arg rel_url "$RELEASE_URL" \
             --arg dl_url "$DOWNLOAD_URL" \
             '{
+              "text": "New release: v\($ver) is now available.",
               "blocks": [
                 {
                   "type": "header",
