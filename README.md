@@ -22,7 +22,7 @@ Skills are available immediately in new Cowork sessions.
 
 If the marketplace method isn't working, you can install manually from a `.zip` file:
 
-1. Go to the [latest release](https://github.com/timescale/marketing-skills/releases/latest) and download `tigerdata-marketing-skills.zip`
+1. Go to the [latest release](https://github.com/timescale/marketing-skills/releases/latest) and download the `.zip` file
 2. In a Cowork session, go to **Browse plugins** → **My Plugins** → click **+** → **Upload plugin**
 3. Select the `.zip` file
 
@@ -81,10 +81,15 @@ To update: `git pull && git submodule update --init --recursive`.
 
 ### Native Skills
 
-| Skill | Platforms | Description |
-|-------|-----------|-------------|
-| **brand-voice-writer** | Cowork, Claude Code | Write content using our brand voice, ICP profiles, positioning, and terminology |
-| **skill-contributor** | Cowork | Guided workflow for submitting skill changes via git — walks non-technical contributors through branching, committing, and opening PRs |
+| Skill | Category | Platforms | Description |
+|-------|----------|-----------|-------------|
+| **brand-voice-writer** | content-creation | Cowork, Claude Code | Write content using our brand voice, ICP profiles, positioning, and terminology |
+| **content-reviewer** | content-creation | Cowork, Claude Code | Evaluate marketing content drafts against Tiger Data's quality rubrics |
+| **seo-meta-optimizer** | seo | Cowork, Claude Code | Optimize title tags and meta descriptions at scale (CSV input or URL crawling) |
+| **ghost-paper** | meta | Cowork, Claude Code | Turn markdown into styled HTML reports with interactive charts and KPI strips |
+| **doctor** | meta | Cowork, Claude Code | Health check for the plugin environment (Google Drive, Tiger Den, Node.js) |
+| **setup** | meta | Cowork, Claude Code | First-time onboarding — connects Google Drive, Tiger Den, and recommends skills |
+| **skill-contributor** | meta | Cowork, Claude Code | Guided git workflow for non-technical contributors to submit skill changes |
 
 ### Community Skills
 

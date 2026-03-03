@@ -54,7 +54,7 @@ jobs:
       - name: Upload Cowork plugin to release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/tigerdata-marketing-skills.zip
+          files: dist/tigerdata-marketing-skills-*.zip
 
       # ── Version bump ──
 

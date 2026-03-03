@@ -216,13 +216,14 @@ READMEEOF
   info "Created plugin README"
 
   # Package
-  TMP_ZIP="/tmp/${PLUGIN_NAME}.zip"
+  ZIP_FILENAME="${PLUGIN_NAME}-${VERSION}.zip"
+  TMP_ZIP="/tmp/${ZIP_FILENAME}"
   rm -f "$TMP_ZIP"
   (cd "$BUILD_DIR" && zip -r "$TMP_ZIP" . -x "*.DS_Store" -x "__MACOSX/*") > /dev/null
-  cp "$TMP_ZIP" "$DIST_DIR/${PLUGIN_NAME}.zip"
+  cp "$TMP_ZIP" "$DIST_DIR/${ZIP_FILENAME}"
   rm -f "$TMP_ZIP"
 
-  info "Cowork plugin: $DIST_DIR/${PLUGIN_NAME}.zip ($native_count native + $((total_count - native_count)) vendor = $total_count skills)"
+  info "Cowork plugin: $DIST_DIR/${ZIP_FILENAME} ($native_count native + $((total_count - native_count)) vendor = $total_count skills)"
 }
 
 # ── Build Claude Code plugin (sync skills/ directory) ──
