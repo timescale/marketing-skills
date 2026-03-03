@@ -1,19 +1,7 @@
 ---
 name: case-study-prep
 platforms: [cowork, claude-code]
-description: >
-  Create Tiger Data case study interview prep documents. Gathers customer information
-  from Slack (#ask-eon channel via @eon bot) and user-provided Google Docs, then aligns
-  all known information against the 8 standard Tiger Data Case Study Questions, producing
-  a .docx with status ratings (Complete/Partial/Missing), draft answers, gap analysis,
-  a 30-minute interview guide, and draft pull quotes.
-
-  MANDATORY TRIGGERS: case study, interview prep, case study prep, customer story,
-  customer interview, case study questions, ClickHouse takeout, competitive win story.
-
-  Use when the user asks to prepare for a customer case study interview, create a case
-  study prep doc, or align existing customer notes against the Tiger Data case study
-  questions template.
+description: "Create Tiger Data case study interview prep documents. Gathers customer information from Slack (#ask-eon channel via @eon bot) and user-provided Google Docs, then aligns all known information against the 8 standard Tiger Data Case Study Questions, producing a .docx with status ratings (Complete/Partial/Missing), draft answers, gap analysis, a 30-minute interview guide, and draft pull quotes. MANDATORY TRIGGERS: case study, interview prep, case study prep, customer story, customer interview, case study questions, ClickHouse takeout, competitive win story. Use when the user asks to prepare for a customer case study interview, create a case study prep doc, or align existing customer notes against the Tiger Data case study questions template."
 references:
   - case-study/case-study-questions
   - case-study/output-format
