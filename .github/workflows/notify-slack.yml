@@ -60,8 +60,8 @@ jobs:
           # Links: [text](url) → <url|text>
           text = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<\2|\1>', text)
 
-          # Bullet points: - item → • item
-          text = re.sub(r'^(\s*)- ', lambda m: m.group(1) + ('◦ ' if len(m.group(1)) >= 2 else '• '), text, flags=re.MULTILINE)
+          # Bullet points: - or * item → • item (GitHub uses * for auto-generated notes)
+          text = re.sub(r'^(\s*)[*\-] ', lambda m: m.group(1) + ('◦ ' if len(m.group(1)) >= 2 else '• '), text, flags=re.MULTILINE)
 
           # Clean up excessive blank lines
           text = re.sub(r'\n{3,}', '\n\n', text)
