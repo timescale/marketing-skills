@@ -11,6 +11,14 @@
       "name": "tigerdata-marketing-skills",
       "source": "./plugins/tiger-marketing-skills",
       "description": "Claude skills for the TigerData marketing team — brand voice, content review, SEO, and more."
+    },
+    {
+      "name": "marketingskills",
+      "source": {
+        "source": "github",
+        "repo": "coreyhaines31/marketingskills"
+      },
+      "description": "Community marketing skills — cold email, email sequences, launch strategy, paid ads, pricing, and more."
     }
   ]
 }
