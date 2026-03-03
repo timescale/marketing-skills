@@ -1,12 +1,7 @@
 ---
 name: setup
 platforms: [cowork, claude-code]
-description: >
-  First-time onboarding for the marketing skills plugin. Use when someone says "setup",
-  "get started", "configure", "first time", "how do I set this up?", "install",
-  "I just installed the plugin", or when another skill (like /doctor) suggests running setup.
-  Walks through connecting Google Drive, Tiger Den, and Node.js — then recommends skills
-  based on the user's role.
+description: "First-time onboarding for the marketing skills plugin. Use when someone says 'setup', 'get started', 'configure', 'first time', 'how do I set this up?', 'install', 'I just installed the plugin', or when another skill (like /doctor) suggests running setup. Walks through connecting Google Drive, Tiger Den, and Node.js — then recommends skills based on the user's role."
 ---
 
 # Setup — Plugin Onboarding

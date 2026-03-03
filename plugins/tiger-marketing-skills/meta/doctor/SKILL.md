@@ -1,11 +1,7 @@
 ---
 name: doctor
 platforms: [cowork, claude-code]
-description: >
-  Run a health check on the marketing skills plugin environment. Use when someone
-  says "doctor", "check my setup", "is everything working?", "diagnose", "health check",
-  "something's not working", or reports errors with skills that depend on Google Drive
-  or Tiger Den. Also useful after initial setup to confirm everything is connected.
+description: "Run a health check on the marketing skills plugin environment. Use when someone says 'doctor', 'check my setup', 'is everything working?', 'diagnose', 'health check', 'something\u2019s not working', or reports errors with skills that depend on Google Drive or Tiger Den. Also useful after initial setup to confirm everything is connected."
 ---
 
 # Doctor — Environment Health Check

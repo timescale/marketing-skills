@@ -1,14 +1,21 @@
 ---
 name: your-skill-name
 platforms: [cowork, claude-code]
-description: >
-  What this skill does and when Claude should use it.
-  Be specific about trigger words and contexts so Claude activates this skill
-  at the right time. Err on the side of being "pushy" — it's better for Claude
-  to use the skill when it might help than to miss an opportunity.
-  Example: "Use this skill whenever the user asks to write blog posts, articles,
-  social copy, or any marketing content. Also trigger when they mention brand voice,
-  tone, or ask for on-brand writing."
+description: "[One sentence explaining what this skill does.] Use this skill when the user [trigger phrases]. Also trigger when they mention [keywords]."
+# ^^^  DESCRIPTION GUIDELINES:
+#   IMPORTANT: Description MUST be a single line (inline with the key, not multi-line YAML).
+#   The Cowork plugin UI only renders inline descriptions. Multi-line `>` or `|` YAML
+#   syntax will show as blank in the plugin card. Use quotes if the text contains colons.
+#
+#   - Start with a plain-English summary of what the skill does (this shows in the plugin
+#     card UI as a preview — make it count).
+#   - Then list trigger contexts and phrases so Claude knows when to activate it.
+#   - Be specific: "asks to write blog posts" > "wants to write content".
+#   - Minimum 30 words — short descriptions hurt discoverability.
+#   - Err on the side of being "pushy" — better for Claude to trigger when it might help
+#     than to miss an opportunity.
+#   - Cross-reference related skills if relevant ("For email sequences, see email-sequence").
+#   - Use single quotes inside the description since the outer string uses double quotes.
 ---
 
 # Skill Name
