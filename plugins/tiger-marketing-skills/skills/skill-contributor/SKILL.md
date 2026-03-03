@@ -1,7 +1,7 @@
 ---
 name: skill-contributor
 platforms: [cowork]
-description: "Help non-technical contributors submit skill changes to the marketing-skills GitHub repo using a guided, step-by-step git workflow. Use this skill when someone says 'help me submit my changes', 'how do I push this', 'I\u2019m done editing, now what?', 'submit my skill', 'create a PR', 'I need to commit', 'how do I save this', 'share my work', or any request related to saving, sharing, or submitting their work on skills to the team. Also use when someone seems stuck on the git workflow or mentions branches, commits, or pull requests. Walks contributors through branching, committing, pushing, and opening a PR — no git experience required."
+description: "Guide contributors through submitting skill changes to the marketing-skills GitHub repo via git. Trigger when someone explicitly asks for help with git ('help me push this', 'how do I submit', 'create a PR', 'I need to commit'). Also trigger when it's submission time — the user signals their work is done with phrases like 'looks good, let's ship it', 'I'm done', 'this is ready', 'let's get this merged', 'let's PR this', or similar — AND the user hasn't already demonstrated git comfort in the conversation. If the user has been running git commands confidently, do NOT trigger — just provide the commands they need. Walks contributors through branching, committing, pushing, and opening a PR step by step. No git experience required."
 ---
 
 # Skill Contributor — Guided Git Workflow
@@ -94,66 +94,51 @@ git add plugins/tiger-marketing-skills/skills/skill-name/SKILL.md plugins/tiger-
 
 Help them write a clear, short commit message based on what they actually changed. Keep it under 72 characters.
 
-## Step 6: Push to GitHub
+## Step 6: Create a pull request
 
-> "Now let's upload your branch to GitHub so the team can see it. Paste this:"
+> "Last step! Let's upload your changes and create a pull request so the team can review them. This one command does both — it pushes your branch and opens the PR. Paste this:"
 >
-> ```
-> git push -u origin your-branch-name
-> ```
-
-Use the actual branch name from Step 3.
-
-If they get an authentication error, help them troubleshoot:
-- **"Password authentication" error:** They need to use SSH or a personal access token. Suggest they ask in #marketing-tools on Slack for help setting up GitHub authentication.
-- **"Permission denied" error:** They may not have push access. Suggest asking in #marketing-tools.
-
-## Step 7: Create a pull request
-
-> "Last step! Let's create a pull request so someone can review your changes. Click this link:"
->
-> [https://github.com/timescale/marketing-skills/compare/release...your-branch-name](https://github.com/timescale/marketing-skills/compare/release...your-branch-name)
-
-Replace `your-branch-name` in both the link text and the URL with the actual branch name from Step 3. Use a markdown link so it's clickable in Cowork. The `release...your-branch-name` format ensures the PR targets the `release` branch (not `main`).
-
-Then ask: **"Are you familiar with creating pull requests on GitHub, or would you like me to walk you through what you'll see?"**
-
-If they're familiar, just say: "Great — give it a title and description, and hit Create. Let me know when it's done!"
-
-If they're NOT familiar, walk them through it:
-
-> "When you click that link, GitHub will show you a page with all the changes you made — you can scroll through to double-check everything looks right. At the top, you'll see a green **Create pull request** button. Click that."
->
-> "It'll then ask you for two things:"
-> - **Title:** A short summary of what you changed (I'll suggest one for you)
-> - **Description:** A few sentences about what you changed and why. This helps the reviewer understand your intent.
->
-> "Once you've filled those in, click the green **Create pull request** button one more time to submit it. That's it — someone on the team will review it and merge it in."
-
-Help them write a good title and description based on what they changed.
-
-### Adding a label
-
-After creating the PR, they need to add a label so it shows up correctly in the release notes. Walk them through it:
-
-> "One more thing — we need to add a label to your PR so it shows up in the release notes. On the PR page in GitHub, look at the right sidebar and click **Labels**. Pick the one that fits:"
-> - **skill** — you added a new skill
-> - **enhancement** — you improved an existing skill
-> - **fix** — you fixed a bug
-> - **docs** — you updated documentation
-
-If they have the GitHub CLI, they can do it from Terminal instead:
-
-```
-gh pr edit --add-label skill
-```
-
-> **Shortcut:** If they have the [GitHub CLI](https://cli.github.com/) (`gh`) installed, they can create the PR and add the label in one step:
 > ```
 > gh pr create --base release --label skill --title "Your PR title" --body "Brief description of what changed and why"
 > ```
 
-## Step 8: Celebrate
+Replace the title, body, and label with values appropriate for their change. Help them write a clear, short title and a sentence or two about what they changed and why.
+
+When they run this, `gh` will ask if they want to push to `timescale/marketing-skills` — tell them to select that option (it's usually the first one). The branch gets pushed and the PR gets created in one step.
+
+**Pick the right label** for the `--label` flag:
+- `skill` — added a new skill
+- `enhancement` — improved an existing skill
+- `fix` — fixed a bug
+- `docs` — updated documentation
+
+If they get an authentication error, help them troubleshoot:
+- **"not logged in" error:** They need to run `gh auth login` first (see CONTRIBUTING.md setup steps).
+- **"Permission denied" error:** They may not have push access to the repo. Suggest asking in #marketing-tools on Slack.
+
+<details>
+<summary>Fallback if they don't have `gh` installed</summary>
+
+If they don't have the GitHub CLI and can't install it right now, fall back to the manual approach:
+
+1. Push the branch:
+   ```
+   git push -u origin your-branch-name
+   ```
+
+2. Open this link to create the PR on GitHub:
+
+   [https://github.com/timescale/marketing-skills/compare/release...your-branch-name](https://github.com/timescale/marketing-skills/compare/release...your-branch-name)
+
+   Replace `your-branch-name` in both the link text and URL with their actual branch name. Use a markdown link so it's clickable in Cowork.
+
+3. Walk them through the GitHub UI: give it a title and description, add a label from the right sidebar, and click **Create pull request**.
+
+Strongly recommend they install `gh` for next time — it makes this much simpler.
+
+</details>
+
+## Step 7: Celebrate
 
 > "You're done! Your changes are up for review. Someone from the team will take a look and merge them. You'll get a notification on GitHub when it's merged."
 
