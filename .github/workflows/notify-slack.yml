@@ -28,6 +28,7 @@ jobs:
         id: release_notes
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_BODY: ${{ steps.release_notes.outputs.body || '' }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
 
@@ -65,8 +66,6 @@ jobs:
           print(text.strip())
           PYEOF
           fi
-        env:
-          RELEASE_BODY: ${{ steps.release_notes.outputs.body || '' }}
 
       - name: Post to Slack
         if: success()
@@ -74,7 +73,7 @@ jobs:
           SLACK_NOTES=$(cat /tmp/slack_notes.txt 2>/dev/null || echo "")
           VERSION="${{ steps.version.outputs.version }}"
           RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
-          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${VERSION}/tigerdata-marketing-skills.zip"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${VERSION}/tigerdata-marketing-skills-${VERSION}.zip"
 
           curl -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
             -H "Content-Type: application/json" \
