@@ -95,6 +95,24 @@ When a source document changes in Google Drive:
 
 The repo is the source of truth for reference docs. Not everything in a Google Doc needs to go into the skill — just the parts Claude needs to do its job.
 
+## PR labels
+
+Add **one label** to your PR so it shows up in the right section of the release notes. If your PR doesn't have a label, it'll land in "Other Changes."
+
+| Label | When to use |
+|-------|-------------|
+| `skill` | Adding a new skill |
+| `enhancement` | Improving an existing skill or feature |
+| `fix` | Bug fixes |
+| `infra` | Build scripts, CI/CD, repo config |
+| `docs` | Documentation-only changes |
+
+You can add a label when creating the PR on GitHub (right sidebar → Labels), or with the GitHub CLI:
+
+```bash
+gh pr edit --add-label skill
+```
+
 ## PR checklist
 
 The PR template includes a checklist, but here's what to verify:
@@ -105,6 +123,7 @@ The PR template includes a checklist, but here's what to verify:
 - [ ] Any files mentioned in `SKILL.md` actually exist (including cross-skill `../` references)
 - [ ] `SKILL.md` is under 500 lines (put longer content in `references/`)
 - [ ] You've tested the skill on at least a couple of realistic prompts
+- [ ] PR has a label (`skill`, `enhancement`, `fix`, `infra`, or `docs`)
 
 ## Skill writing tips
 
