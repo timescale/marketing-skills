@@ -28,7 +28,6 @@ jobs:
         id: release_notes
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_BODY: ${{ steps.release_notes.outputs.body || '' }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
 
@@ -37,7 +36,7 @@ jobs:
 
           if [ -z "$RELEASE_BODY" ]; then
             echo "No release notes found for v${VERSION}"
-            echo "notes=" >> "$GITHUB_OUTPUT"
+            echo "No release notes provided." > /tmp/slack_notes.txt
           else
             # GitHub markdown → Slack mrkdwn conversion
             python3 - <<'PYEOF' > /tmp/slack_notes.txt
@@ -47,6 +46,9 @@ jobs:
 
           # Strip HTML comments
           text = re.sub(r'<!--.*?-->', '', text, flags=re.DOTALL)
+
+          # Strip out the "Full Changelog" line and everything after it
+          text = re.sub(r'\n?\*\*Full Changelog\*\*:.*$', '', text, flags=re.DOTALL | re.MULTILINE)
 
           # Headers → bold text
           text = re.sub(r'^#{1,4}\s+(.+)$', r'*\1*', text, flags=re.MULTILINE)
@@ -66,21 +68,64 @@ jobs:
           print(text.strip())
           PYEOF
           fi
-
+          
       - name: Post to Slack
         if: success()
         run: |
-          SLACK_NOTES=$(cat /tmp/slack_notes.txt 2>/dev/null || echo "")
+          SLACK_NOTES=$(cat /tmp/slack_notes.txt)
           VERSION="${{ steps.version.outputs.version }}"
           RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${VERSION}/tigerdata-marketing-skills-${VERSION}.zip"
 
-          curl -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
+          # Use jq to build the complex Block Kit JSON safely
+          PAYLOAD=$(jq -n \
+            --arg ver "$VERSION" \
+            --arg notes "$SLACK_NOTES" \
+            --arg rel_url "$RELEASE_URL" \
+            --arg dl_url "$DOWNLOAD_URL" \
+            '{
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🚀 New Release: v\($ver)" }
+                },
+                {
+                  "type": "section",
+                  "text": { "type": "mrkdwn", "text": $notes }
+                },
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "How to Update"}
+                },
+                {
+                  "type": "section",
+                  "text": { "type": "mrkdwn", "text": "1. Download the zip file using the button below \n 2. In Claude Desktop (Cowork) → Customize → Personal plugins  →  + → Upload plugin \n 3. Select the zip file — it replaces your old version "}
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Release" },
+                      "url": $rel_url
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "📦 Download .zip" },
+                      "url": $dl_url,
+                      "style": "primary"
+                    }
+                  ]
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    { "type": "mrkdwn", "text": "Triggered by merge to `main`" }
+                  ]
+                }
+              ]
+            }')
+
+          curl -sfS -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n \
-              --arg version "$VERSION" \
-              --arg release_url "$RELEASE_URL" \
-              --arg download_url "$DOWNLOAD_URL" \
-              --arg release_notes "$SLACK_NOTES" \
-              '{version: $version, release_url: $release_url, download_url: $download_url, release_notes: $release_notes}'
-            )"
+            -d "$PAYLOAD"
