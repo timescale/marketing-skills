@@ -1,5 +1,7 @@
 # Tiger Data Marketing Skills
 
+> **Internal plugin.** This marketplace is built for the Tiger Data marketing team. The skills depend on internal Google Drive documents, Tiger Den, and org-specific context that aren't available outside our organization. You're welcome to browse the source and fork the framework for your own team, but installing the plugin as-is won't be useful outside Tiger Data.
+
 A shared plugin marketplace for the Tiger Data marketing team. Gives Claude specialized knowledge about our brand voice, audience, positioning, terminology, and content quality standards — so it produces better, more on-brand work.
 
 Works with both **Cowork** (Claude Desktop) and **Claude Code** (CLI).
@@ -87,7 +89,7 @@ To update: `git pull`.
 | **brand-voice-writer** | Cowork, Claude Code | Write content using our brand voice, ICP profiles, positioning, and terminology |
 | **content-reviewer** | Cowork, Claude Code | Evaluate marketing content drafts against Tiger Data's quality rubrics |
 | **seo-meta-optimizer** | Cowork, Claude Code | Optimize title tags and meta descriptions at scale (CSV input or URL crawling) |
-| **ghost-paper** | Cowork, Claude Code | Turn markdown into styled HTML reports with interactive charts and KPI strips |
+| **ghost-paper** | Cowork, Claude Code | Turn markdown into styled HTML reports with interactive charts and KPI strips. Invoke with `/ghost-paper` — only auto-triggers when you mention it by name. |
 | **doctor** | Cowork, Claude Code | Health check for the plugin environment (Google Drive, Tiger Den, Node.js) |
 | **setup** | Cowork, Claude Code | First-time onboarding — connects Google Drive, Tiger Den, and recommends skills |
 | **skill-contributor** | Cowork | Guided git workflow for non-technical contributors to submit skill changes |
@@ -180,6 +182,10 @@ dist/                           ← build output (gitignored)
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for how to create new skills, update existing ones, and get your changes reviewed.
+
+## License
+
+Apache 2.0 — see [LICENSE](LICENSE) for details.
 
 ## Questions?
 

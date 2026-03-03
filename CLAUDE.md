@@ -26,6 +26,18 @@ git checkout -b feature/short-description
 
 Never commit directly to `main` or `release`. All work happens on feature branches, and all PRs target `release`.
 
+### Cowork sandbox limitations
+
+In Cowork (Claude Desktop), git **read** commands work fine (`git status`, `git diff`, `git log`, `git branch`), but git **write** commands (`git add`, `git commit`, `git push`, `git checkout -b`) will fail due to sandbox restrictions. Do not attempt write commands and then improvise when they fail — plan for this upfront.
+
+When changes are ready to submit:
+
+1. **Ask the user** before starting any git workflow: *"Ready to create a PR? Do you want me to walk you through the git steps, or are you comfortable running them yourself?"*
+2. **If they want help:** Invoke the **skill-contributor** skill, which guides non-technical users through branching, committing, pushing, and opening a PR step by step.
+3. **If they're comfortable with git:** Provide the exact terminal commands they need to copy-paste (branch, add, commit, and `gh pr create`). Skip `git push` — `gh pr create` will offer to push the branch automatically. Present each command separately so they're easy to copy one at a time. Don't assume they know the repo's branching conventions — always specify `release` as the base branch.
+
+In Claude Code (CLI), git write commands work normally. Proceed with commits and pushes directly.
+
 ## Build Commands
 
 The build script is only needed for producing the Cowork `.zip` for manual installs and releases. The marketplace reads skills directly from the repo — no build step required.
