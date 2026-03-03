@@ -28,6 +28,7 @@ jobs:
         id: release_notes
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_BODY: ${{ steps.release_notes.outputs.body || '' }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
 
@@ -65,8 +66,6 @@ jobs:
           print(text.strip())
           PYEOF
           fi
-        env:
-          RELEASE_BODY: ${{ steps.release_notes.outputs.body || '' }}
 
       - name: Post to Slack
         if: success()
