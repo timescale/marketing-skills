@@ -12,8 +12,10 @@ Works with both **Cowork** (Claude Desktop) and **Claude Code** (CLI).
 2. Click **Customize** in the left sidebar
 3. Go to **Browse plugins** → **Personal** tab
 4. Click the **+** button → **Add marketplace from GitHub**
-5. Paste the repo URL: `https://github.com/timescale/marketing-skills`
+5. Paste the repo URL: `timescale/marketing-skills`
 6. Click **Sync**, then browse the available skills and click **Install now**
+
+The marketplace includes our Tiger Data skills and a community plugin by Corey Haines with additional marketing skills (cold email, launch strategy, paid ads, etc.). Install whichever you'd like.
 
 Skills are available immediately in new Cowork sessions.
 
@@ -56,7 +58,6 @@ If you prefer a local checkout:
 ```bash
 git clone https://github.com/timescale/marketing-skills.git
 cd marketing-skills
-git submodule update --init --recursive
 ```
 
 Then point Claude Code at the plugin directory:
@@ -73,42 +74,31 @@ Or add it permanently in `.claude/settings.json`:
 }
 ```
 
-To update: `git pull && git submodule update --init --recursive`.
+To update: `git pull`.
 
 </details>
 
 ## Skills
 
-### Native Skills
-
-| Skill | Category | Platforms | Description |
-|-------|----------|-----------|-------------|
-| **brand-voice-writer** | content-creation | Cowork, Claude Code | Write content using our brand voice, ICP profiles, positioning, and terminology |
-| **content-reviewer** | content-creation | Cowork, Claude Code | Evaluate marketing content drafts against Tiger Data's quality rubrics |
-| **seo-meta-optimizer** | seo | Cowork, Claude Code | Optimize title tags and meta descriptions at scale (CSV input or URL crawling) |
-| **ghost-paper** | meta | Cowork, Claude Code | Turn markdown into styled HTML reports with interactive charts and KPI strips |
-| **doctor** | meta | Cowork, Claude Code | Health check for the plugin environment (Google Drive, Tiger Den, Node.js) |
-| **setup** | meta | Cowork, Claude Code | First-time onboarding — connects Google Drive, Tiger Den, and recommends skills |
-| **skill-contributor** | meta | Cowork, Claude Code | Guided git workflow for non-technical contributors to submit skill changes |
-
-### Community Skills
-
-Curated from the open-source [marketingskills](https://github.com/coreyhaines31/marketingskills) repo. Controlled by [`vendor-skills.json`](plugins/tiger-marketing-skills/vendor-skills.json).
+### Tiger Data Skills
 
 | Skill | Platforms | Description |
 |-------|-----------|-------------|
-| **cold-email** | Cowork, Claude Code | B2B cold outreach sequences |
-| **email-sequence** | Cowork, Claude Code | Automated email flows (onboarding, nurture, re-engagement) |
-| **launch-strategy** | Cowork, Claude Code | Product launch planning with ORB framework |
-| **marketing-ideas** | Cowork, Claude Code | 139 proven SaaS marketing tactics |
-| **paid-ads** | Cowork, Claude Code | Ad campaign planning (Google, Meta, LinkedIn) |
-| **pricing-strategy** | Cowork, Claude Code | Pricing tiers and monetization planning |
+| **brand-voice-writer** | Cowork, Claude Code | Write content using our brand voice, ICP profiles, positioning, and terminology |
+| **content-reviewer** | Cowork, Claude Code | Evaluate marketing content drafts against Tiger Data's quality rubrics |
+| **seo-meta-optimizer** | Cowork, Claude Code | Optimize title tags and meta descriptions at scale (CSV input or URL crawling) |
+| **ghost-paper** | Cowork, Claude Code | Turn markdown into styled HTML reports with interactive charts and KPI strips |
+| **doctor** | Cowork, Claude Code | Health check for the plugin environment (Google Drive, Tiger Den, Node.js) |
+| **setup** | Cowork, Claude Code | First-time onboarding — connects Google Drive, Tiger Den, and recommends skills |
+| **skill-contributor** | Cowork | Guided git workflow for non-technical contributors to submit skill changes |
 
-> More vendor skills are available but disabled by default. Edit `vendor-skills.json` to enable them.
+### Community Skills
+
+Additional marketing skills by [Corey Haines](https://github.com/coreyhaines31/marketingskills) are available as a separate plugin in this marketplace. Install it alongside our plugin for cold email, email sequences, launch strategy, paid ads, pricing strategy, and more.
 
 ### Platform Compatibility
 
-Each skill declares which platforms it supports via a `platforms` field in its SKILL.md frontmatter. The build system uses this to produce the right artifacts — the Cowork `.zip` includes only Cowork-compatible skills, while Claude Code gets everything.
+Each skill declares which platforms it supports via a `platforms` field in its SKILL.md frontmatter. The Cowork `.zip` build includes only Cowork-compatible skills, while Claude Code gets everything.
 
 ## How Skills Work
 
@@ -165,7 +155,7 @@ Requires Node.js v18+.
 
 ```
 .claude-plugin/
-  marketplace.json              ← marketplace registry (lists plugins in this repo)
+  marketplace.json              ← marketplace registry (lists our plugin + community plugin)
 
 plugins/
   tiger-marketing-skills/
@@ -174,15 +164,15 @@ plugins/
     config.json                 ← runtime config (Drive folder ID, etc.)
     REFERENCES.md               ← how skills fetch reference docs from Google Drive
     _template/                  ← copy this to create a new skill
-    content-creation/           ← blog posts, articles, brand writing
-    seo/                        ← search optimization
-    social-media/               ← social posts, campaigns
-    analytics/                  ← reporting, dashboards
-    meta/                       ← utility skills
-    vendor/                     ← git submodules for community skills
-    vendor-skills.json          ← config: which vendor skills to include
-    skills/                     ← generated flat directory (gitignored)
-    build-plugin.sh             ← builds plugin artifacts
+    build-plugin.sh             ← builds Cowork .zip for manual installs
+    skills/                     ← all native skills (flat directory)
+      brand-voice-writer/
+      content-reviewer/
+      doctor/
+      ghost-paper/
+      seo-meta-optimizer/
+      setup/
+      skill-contributor/
 
 dist/                           ← build output (gitignored)
 ```
@@ -194,4 +184,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to create new skills, update exis
 ## Questions?
 
 Open a GitHub Issue or ask in the #marketing-tools Slack channel.
-
