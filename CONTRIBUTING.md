@@ -8,7 +8,9 @@ Everyone on the team is welcome to create new skills or improve existing ones. A
 
 The easiest way to work on skills is with Cowork mode in Claude Desktop. This gives you Claude as a collaborator that can read your skill files, help you write SKILL.md instructions, and test changes in real time.
 
-1. **Install the `gh` command line tool:** this makes everything easier for working with `git`! Installation instructions at [GitHub CLI](https://cli.github.com/).
+> **New to the terminal?** You'll need a terminal app to run the commands below. On **Mac**, open **Terminal** (press Cmd+Space to open Spotlight, type "Terminal", and hit Enter). On **Windows**, open **PowerShell** (click Start, type "PowerShell", and hit Enter). Once it's open, you can paste commands directly into it.
+
+1. **Install the `gh` command line tool:** We strongly recommend this — it handles GitHub authentication, cloning, and pull requests all in one tool, so you won't have to wrestle with SSH keys or personal access tokens. Install it from [GitHub CLI](https://cli.github.com/). On Mac with Homebrew, that's just `brew install gh`.
 
 1. **Clone the repo** (if you haven't already):
    ```bash
@@ -17,12 +19,12 @@ The easiest way to work on skills is with Cowork mode in Claude Desktop. This gi
    <!-- > **Tip:** If you have the [GitHub CLI](https://cli.github.com/) (`gh`) installed, you can use `gh repo clone timescale/marketing-skills` instead — it handles authentication automatically. -->
 
 2. **Set up your name and email for `git`**: If this is your first time using `git` you need to tell it who you are and what email address is associated with your GitHub account. Run these two commands in your terminal:
-```bash
-git config --global user.name "Your Name"
-```
-```bash
-git config --global user.email "your.email@example.com"
-```
+   ```bash
+   git config --global user.name "Your Name"
+   ```
+   ```bash
+   git config --global user.email "your.email@example.com"
+   ```
 
 2. **Authenticate to GitHub** (if you haven't already): If you haven't used `git` in the terminal before, you will need to authenticate so that you can push changes. Run this command:
    ```bash
