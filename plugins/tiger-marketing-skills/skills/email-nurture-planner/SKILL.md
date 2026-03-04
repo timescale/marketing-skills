@@ -39,6 +39,8 @@ Reference docs live in a shared Google Drive folder. Before planning anything, f
 
 **How to fetch:** Read `REFERENCES.md` from the plugin root for runtime detection and Drive fetch instructions.
 
+**Freshness check:** After fetching each reference doc, check the "Last updated" date (usually near the top of the doc). If either doc was last updated more than 6 months ago, flag it to the user before citing specific metrics or proof points. Say something like: "The product-marketing-context doc was last updated [date]. Some metrics or proof points may be outdated. Want me to proceed with what's there, or should we verify the numbers first?" This matters most for product-marketing-context, which contains specific performance benchmarks and customer metrics that change over time. Brand-voice-guide changes less frequently, so a 6-month lag there is less risky, but still worth noting.
+
 ### 2. Clarify the sequence brief
 
 Before planning, gather these inputs from the user. Ask for anything they haven't provided. Do not silently assume defaults. If the user omits length or cadence, propose the defaults (4-6 emails, every 3-5 days) and wait for confirmation before proceeding.
