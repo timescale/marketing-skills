@@ -16,6 +16,9 @@ The marketplace also lists a community plugin ([marketingskills](https://github.
 # Check current branch
 git branch --show-current
 
+# Fetch all remote branches (needed on first clone — release may not exist locally yet)
+git fetch origin
+
 # Switch to release and pull latest
 git checkout release
 git pull origin release
@@ -28,7 +31,9 @@ Never commit directly to `main` or `release`. All work happens on feature branch
 
 ### Cowork sandbox limitations
 
-In Cowork (Claude Desktop), git **read** commands work fine (`git status`, `git diff`, `git log`, `git branch`), but git **write** commands (`git add`, `git commit`, `git push`, `git checkout -b`) will fail due to sandbox restrictions. Do not attempt write commands and then improvise when they fail — plan for this upfront.
+In Cowork (Claude Desktop), git **read** commands work fine (`git status`, `git diff`, `git log`, `git branch`).
+
+**NEVER run git write commands in Cowork.** This includes `git add`, `git commit`, `git push`, `git checkout -b`, `git merge`, `git rebase`, `git stash`, `git reset`, and any other command that modifies the repo state. These commands will fail in the sandbox and may leave behind a `.git/index.lock` file that breaks all subsequent git operations for the user. Do not attempt write commands and then improvise when they fail — plan for this upfront.
 
 When changes are ready to submit:
 
@@ -107,13 +112,16 @@ Always branch from `release`, not `main`. `release` has the latest merged work; 
 
 Release process: merge to `release` → publish GitHub Release with semver tag (e.g. `v1.2.0`) → CI builds .zip, bumps version in `plugin.json`, opens auto-merge PR to `main`.
 
+**NEVER modify the version in `plugin.json`.** CI handles versioning automatically during the release process. Do not bump, set, or touch the version number for any reason.
+
 ## Creating a New Skill
 
 1. Copy `_template/` to `skills/your-skill-name/`
 2. Edit `SKILL.md`: fill in frontmatter (`name`, `platforms`, `description`) and write instructions
 3. Set `platforms` correctly: `[cowork, claude-code]` for instruction-only skills, `[claude-code]` for skills requiring terminal/file access
 4. Add reference docs to `references/` if needed
-5. PR to `release` branch
+5. Update the skills table in `README.md` to include the new skill
+6. PR to `release` branch
 
 ## Skill Writing Conventions
 

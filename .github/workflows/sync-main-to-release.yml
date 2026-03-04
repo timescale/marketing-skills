@@ -1,0 +1,44 @@
+name: Sync main to release
+
+# After a release PR merges to main, sync the merge commit back to release
+# so the branches stay aligned.
+#
+# Auth strategy:
+#   - Deploy key (DEPLOY_KEY secret) for pushing to the protected release branch
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Configure SSH for deploy key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Set git remote to SSH
+        run: git remote set-url origin git@github.com:${{ github.repository }}.git
+
+      - name: Merge main into release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+
+          # Skip if release already contains everything from main
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo "release already contains all commits from main — nothing to sync."
+            exit 0
+          fi
+
+          git merge origin/main --no-edit
+          git push origin release
