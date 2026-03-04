@@ -98,6 +98,7 @@ After the per-email plans, include:
 - **Exit conditions**: When and why someone leaves the sequence early (e.g., "exits if they start a trial," "exits if they unsubscribe," "exits if they convert via another channel"). Define at least one positive exit (they converted) and one negative exit (they disengaged).
 - **Success metrics**: What to measure (open rates, click-through, conversion to goal action)
 - **Branching notes**: Any conditional logic suggestions (e.g., "if they click Email 3's CTA, skip Email 4 and go to Email 5")
+- **Implementation platform**: Note where the sequence will be built. Default is HubSpot (Tiger Data's email automation platform). If the user specifies a different tool, note it here. This field is informational for whoever implements the sequence; it does not change the plan or copy.
 
 ### 6. Cross-check against brand voice
 
