@@ -131,25 +131,25 @@ For each flagged page, suggest 3-4 anchor text variations:
 
 Map current pillar/cluster links, recommend link structure, and list specific links to add.
 
-> **Reference**: See [references/linking-templates.md](./references/linking-templates.md) for the topic cluster link strategy template.
+> **Reference**: See the [linking templates](./references/linking-templates.md) for the topic cluster link strategy template.
 
 ### 6. Find contextual link opportunities
 
 Analyze each page for topic-relevant link opportunities and prioritize high-impact additions.
 
-> **Reference**: See [references/linking-templates.md](./references/linking-templates.md) for the contextual link opportunities template.
+> **Reference**: See the [linking templates](./references/linking-templates.md) for the contextual link opportunities template.
 
 ### 7. Optimize navigation and footer links
 
 Analyze main/footer/sidebar/breadcrumb navigation and recommend pages to add or remove.
 
-> **Reference**: See [references/linking-templates.md](./references/linking-templates.md) for the navigation optimization template.
+> **Reference**: See the [linking templates](./references/linking-templates.md) for the navigation optimization template.
 
 ### 8. Generate link implementation plan
 
 Produce an executive summary, current state metrics, phased priority actions (weeks 1-4+), implementation guide, and tracking plan.
 
-> **Reference**: See [references/linking-templates.md](./references/linking-templates.md) for the full implementation plan template.
+> **Reference**: See the [linking templates](./references/linking-templates.md) for the full implementation plan template.
 
 ## Validation checkpoints
 
