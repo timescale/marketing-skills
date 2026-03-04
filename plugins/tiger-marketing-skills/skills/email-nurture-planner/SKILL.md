@@ -39,14 +39,14 @@ Reference docs live in a shared Google Drive folder. Before planning anything, f
 
 ### 2. Clarify the sequence brief
 
-Before planning, gather these inputs from the user. Ask for anything they haven't provided:
+Before planning, gather these inputs from the user. Ask for anything they haven't provided. Do not silently assume defaults. If the user omits length or cadence, propose the defaults (4-6 emails, every 3-5 days) and wait for confirmation before proceeding.
 
 - **Goal**: What should recipients do after the sequence? (e.g., start a trial, attend a webinar, adopt a feature, read a pillar piece)
 - **Audience**: Which persona or segment? (Map to the personas in product-marketing-context if possible)
 - **Topic or theme**: What content territory does this sequence cover?
 - **Entry trigger**: How do people enter the sequence? (e.g., downloaded a guide, signed up for newsletter, attended a webinar)
-- **Approximate length**: How many emails? (Default to 4-6 if unspecified)
-- **Cadence preference**: How often? (Default to every 3-5 days if unspecified)
+- **Approximate length**: How many emails? (Suggest 4-6 if unspecified, but confirm with user)
+- **Cadence preference**: How often? (Suggest every 3-5 days if unspecified, but confirm with user)
 
 ### 3. Design the sequence arc
 
@@ -89,6 +89,7 @@ After the per-email plans, include:
 
 Review the plan against the email section of the brand voice guide:
 
+- **No em dashes.** The brand voice guide has an absolute rule: do not use em dashes in any content. Scan the entire plan (subject line directions, key messages, content outlines, metadata) and replace every em dash with a period, comma, colon, or separate sentence. This applies to the plan itself, not just final copy, because the plan feeds directly into brand-voice-writer.
 - Are subject line directions following the rules? (No clickbait, no ALL CAPS, no false urgency)
 - Is the CTA progression natural? (Not every email should push a demo)
 - Does the sequence lead with problems and value, not features?
@@ -98,13 +99,16 @@ Flag anything that drifts from voice guidelines.
 
 ## Output format
 
-Present the plan as a structured document with clear sections:
+Present the plan directly in the conversation as structured text. Do not create a file, document, or report — just respond in chat. Use these sections:
 
 1. **Sequence overview** (goal, audience, entry trigger, cadence, duration)
 2. **Sequence arc** (visual summary of the progression)
 3. **Per-email plans** (the detailed breakdown from Step 4)
 4. **Sequence metadata** (from Step 5)
-5. **Next steps** (recommendations for execution)
+5. **Voice check** (results of the Step 6 cross-check: list any flags, or state "No issues found" if the plan passes all checks. Always confirm em dash compliance explicitly.)
+6. **Next steps** (recommendations for execution)
+
+Do not use Ghost Paper, markdown files, or any other document generation tool. The plan is a working artifact meant to be iterated on in conversation, not a deliverable.
 
 ## Optional: Tiger Den MCP integration
 
