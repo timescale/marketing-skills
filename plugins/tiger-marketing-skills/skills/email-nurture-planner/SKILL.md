@@ -146,6 +146,17 @@ After the plan is complete, offer to:
 
 **Do not auto-trigger brand-voice-writer.** The plan is meant to be reviewed and iterated on before anyone writes copy. Wait for the user to confirm the plan looks good.
 
+### Editing the plan before writing
+
+The user may want to tweak individual email plans before copy gets written. There are two ways to do this:
+
+1. **Conversational edits.** The user says what to change (e.g., "Move the three evaluation tips from Email 1 to Email 2" or "Make Email 4's CTA about booking a call instead of restarting a trial"). Rewrite the affected email plan(s) and confirm before proceeding.
+2. **Paste-back edits.** The user copies an email plan from the output, edits it directly (in a text editor, note, or the chat input), and pastes the revised version back. Use the pasted version as the new plan for that email, replacing the original. This gives the user full control over the outline without having to describe every change in words.
+
+When presenting the plan, include this note at the end of the **Next steps** section: *"To edit any email plan before writing, you can tell me what to change or paste a revised version of the plan directly."*
+
+### Writing the emails
+
 When the user is ready to write, ask which email to start with (suggest Email 1). Then hand off to brand-voice-writer with this context for each email:
 
 - The sequence overview (goal, audience, sender, sequence mode)
