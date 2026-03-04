@@ -55,7 +55,13 @@ Explain the output in plain language: new files (untracked), modified files, whi
 
 ## Step 3: Create a branch
 
-> "Before we save your changes, let's create a branch off `release` (that's our integration branch — all PRs go there, not `main`). Paste this:"
+> "Before we save your changes, let's make sure we have the latest `release` branch. Paste this first:"
+>
+> ```
+> git fetch origin release:release
+> ```
+>
+> "Now let's create a branch off `release` (that's our integration branch — all PRs go there, not `main`). Paste this:"
 >
 > ```
 > git checkout -b your-name/short-description release
