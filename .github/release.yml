@@ -11,6 +11,7 @@ changelog:
   exclude:
     authors:
       - github-actions[bot]
+      - timescale-automation
     labels:
       - skip-changelog
   categories:
