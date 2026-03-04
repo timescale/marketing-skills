@@ -6,7 +6,7 @@ name: Release
 #
 # Auth strategy:
 #   - Deploy key (DEPLOY_KEY secret) for git push to protected branches
-#   - ORG_AUTOMATION_TOKEN for GitHub API operations (PR creation)
+#   - ORG_AUTOMATION_TOKEN for GitHub API operations (PR creation, auto-merge)
 #   - Default GITHUB_TOKEN for uploading release assets
 
 on:
@@ -100,14 +100,14 @@ jobs:
           This PR will auto-merge once checks pass."
           fi
 
-      # - name: Enable auto-merge
-      #   env:
-      #     GH_TOKEN: ${{ github.token }}
-      #   run: |
-      #     PR_NUMBER=$(gh pr list --base main --head release --state open --json number --jq '.[0].number')
-      #     if [ -n "$PR_NUMBER" ]; then
-      #       gh pr merge "$PR_NUMBER" --auto --squash
-      #       echo "Auto-merge enabled on PR #$PR_NUMBER"
-      #     else
-      #       echo "Warning: Could not find open PR to enable auto-merge"
-      #     fi
+      - name: Enable auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.ORG_AUTOMATION_TOKEN }}
+        run: |
+          PR_NUMBER=$(gh pr list --base main --head release --state open --json number --jq '.[0].number')
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr merge "$PR_NUMBER" --auto --merge
+            echo "Auto-merge enabled on PR #$PR_NUMBER"
+          else
+            echo "Warning: Could not find open PR to enable auto-merge"
+          fi
