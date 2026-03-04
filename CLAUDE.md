@@ -31,7 +31,14 @@ Never commit directly to `main` or `release`. All work happens on feature branch
 
 ### Cowork sandbox limitations
 
-In Cowork (Claude Desktop), git **read** commands work fine (`git status`, `git diff`, `git log`, `git branch`).
+In Cowork (Claude Desktop), git **read** commands work but must be run with `GIT_OPTIONAL_LOCKS=0` to prevent stale `.git/index.lock` files. Even read commands like `git status` and `git diff` can create lock files when refreshing the index, and the Cowork sandbox can't clean them up — leaving a lock file that breaks all subsequent git operations for the user.
+
+Always prefix git commands with the environment variable:
+```bash
+GIT_OPTIONAL_LOCKS=0 git status
+GIT_OPTIONAL_LOCKS=0 git diff
+GIT_OPTIONAL_LOCKS=0 git log
+```
 
 **NEVER run git write commands in Cowork.** This includes `git add`, `git commit`, `git push`, `git checkout -b`, `git merge`, `git rebase`, `git stash`, `git reset`, and any other command that modifies the repo state. These commands will fail in the sandbox and may leave behind a `.git/index.lock` file that breaks all subsequent git operations for the user. Do not attempt write commands and then improvise when they fail — plan for this upfront.
 
