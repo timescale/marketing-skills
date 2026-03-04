@@ -16,7 +16,12 @@ The easiest way to work on skills is with Cowork mode in Claude Desktop. This gi
    ```bash
    gh repo clone timescale/marketing-skills
    ```
-   <!-- > **Tip:** If you have the [GitHub CLI](https://cli.github.com/) (`gh`) installed, you can use `gh repo clone timescale/marketing-skills` instead — it handles authentication automatically. -->
+
+1. **Fetch the `release` branch:** After cloning, the `release` branch may not exist locally yet. Fetch it so you can branch from it later:
+   ```bash
+   cd marketing-skills
+   git fetch origin release:release
+   ```
 
 2. **Set up your name and email for `git`**: If this is your first time using `git` you need to tell it who you are and what email address is associated with your GitHub account. Run these two commands in your terminal:
    ```bash
@@ -55,6 +60,7 @@ If you prefer the terminal, you can develop skills with Claude Code:
    ```bash
    git clone https://github.com/timescale/marketing-skills.git
    cd marketing-skills
+   git fetch origin release:release
    ```
 
 2. **Start Claude Code with the plugin loaded:**
