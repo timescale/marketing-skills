@@ -88,6 +88,7 @@ To update: `git pull`.
 |-------|-----------|-------------|
 | **brand-voice-writer** | Cowork, Claude Code | Write content using our brand voice, ICP profiles, positioning, and terminology |
 | **content-reviewer** | Cowork, Claude Code | Evaluate marketing content drafts against Tiger Data's quality rubrics |
+| **de-slop** | Cowork, Claude Code | Strip AI writing patterns from text to make it sound natural and human-written |
 | **seo-meta-optimizer** | Cowork, Claude Code | Optimize title tags and meta descriptions at scale (CSV input or URL crawling) |
 | **ghost-paper** | Cowork, Claude Code | Turn markdown into styled HTML reports with interactive charts and KPI strips. Invoke with `/ghost-paper` — only auto-triggers when you mention it by name. |
 | **doctor** | Cowork, Claude Code | Health check for the plugin environment (Google Drive, Tiger Den, Node.js) |
@@ -170,6 +171,7 @@ plugins/
     skills/                     ← all native skills (flat directory)
       brand-voice-writer/
       content-reviewer/
+      de-slop/
       doctor/
       ghost-paper/
       seo-meta-optimizer/
