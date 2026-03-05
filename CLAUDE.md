@@ -16,6 +16,9 @@ The marketplace also lists a community plugin ([marketingskills](https://github.
 # Check current branch
 git branch --show-current
 
+# Fetch all remote branches (needed on first clone — release may not exist locally yet)
+git fetch origin
+
 # Switch to release and pull latest
 git checkout release
 git pull origin release
@@ -25,6 +28,27 @@ git checkout -b feature/short-description
 ```
 
 Never commit directly to `main` or `release`. All work happens on feature branches, and all PRs target `release`.
+
+### Cowork sandbox limitations
+
+In Cowork (Claude Desktop), git **read** commands work but must be run with `GIT_OPTIONAL_LOCKS=0` to prevent stale `.git/index.lock` files. Even read commands like `git status` and `git diff` can create lock files when refreshing the index, and the Cowork sandbox can't clean them up — leaving a lock file that breaks all subsequent git operations for the user.
+
+Always prefix git commands with the environment variable:
+```bash
+GIT_OPTIONAL_LOCKS=0 git status
+GIT_OPTIONAL_LOCKS=0 git diff
+GIT_OPTIONAL_LOCKS=0 git log
+```
+
+**NEVER run git write commands in Cowork.** This includes `git add`, `git commit`, `git push`, `git checkout -b`, `git merge`, `git rebase`, `git stash`, `git reset`, and any other command that modifies the repo state. These commands will fail in the sandbox and may leave behind a `.git/index.lock` file that breaks all subsequent git operations for the user. Do not attempt write commands and then improvise when they fail — plan for this upfront.
+
+When changes are ready to submit:
+
+1. **Ask the user** before starting any git workflow: *"Ready to create a PR? Do you want me to walk you through the git steps, or are you comfortable running them yourself?"*
+2. **If they want help:** Invoke the **skill-contributor** skill, which guides non-technical users through branching, committing, pushing, and opening a PR step by step.
+3. **If they're comfortable with git:** Provide the exact terminal commands they need to copy-paste (branch, add, commit, and `gh pr create`). Skip `git push` — `gh pr create` will offer to push the branch automatically. Present each command separately so they're easy to copy one at a time. Don't assume they know the repo's branching conventions — always specify `release` as the base branch.
+
+In Claude Code (CLI), git write commands work normally. Proceed with commits and pushes directly.
 
 ## Build Commands
 
@@ -95,13 +119,16 @@ Always branch from `release`, not `main`. `release` has the latest merged work; 
 
 Release process: merge to `release` → publish GitHub Release with semver tag (e.g. `v1.2.0`) → CI builds .zip, bumps version in `plugin.json`, opens auto-merge PR to `main`.
 
+**NEVER modify the version in `plugin.json`.** CI handles versioning automatically during the release process. Do not bump, set, or touch the version number for any reason.
+
 ## Creating a New Skill
 
 1. Copy `_template/` to `skills/your-skill-name/`
 2. Edit `SKILL.md`: fill in frontmatter (`name`, `platforms`, `description`) and write instructions
 3. Set `platforms` correctly: `[cowork, claude-code]` for instruction-only skills, `[claude-code]` for skills requiring terminal/file access
 4. Add reference docs to `references/` if needed
-5. PR to `release` branch
+5. Update the skills table in `README.md` to include the new skill
+6. PR to `release` branch
 
 ## Skill Writing Conventions
 

@@ -23,8 +23,7 @@ terminology so you can write marketing content that sounds like us — not gener
 
 ### 1. Load the right context
 
-Reference docs live in a shared Google Drive folder — not bundled in this plugin. Before
-writing anything, fetch the reference docs relevant to the task from Drive.
+Before writing anything, fetch the reference docs declared in this skill's frontmatter.
 
 **Which docs to fetch:**
 
@@ -33,7 +32,7 @@ writing anything, fetch the reference docs relevant to the task from Drive.
 
 Fetch both docs before writing. product-marketing-context gives you the strategic context; brand-voice-guide gives you the structural playbook.
 
-**How to fetch:** Read `REFERENCES.md` from the plugin root — it explains how to detect your runtime (Cowork vs Claude Code) and fetch docs from the shared Google Drive folder.
+**How to fetch:** Read `REFERENCES.md` from the plugin root — it explains the fetching strategy and fallback chain for loading reference docs.
 
 ### 2. Apply brand voice consistently
 
@@ -62,13 +61,13 @@ After writing, do a self-check:
 - Would this resonate with the target audience?
 - Is the positioning consistent with our product marketing context?
 
-## Optional: Tiger Den MCP integration
+## Optional: Tiger Den content enrichment
 
-These features require the Tiger Den MCP server. If the tools aren't available, skip this section entirely — the skill works fine without them. See the repo README for setup instructions.
+If the Tiger Den MCP tools are available, you can use them to enrich content beyond the core reference docs:
 
 ### Content search
 
-If the `search_content` tool is available, use it to search for relevant existing content, published articles, case studies, and data points that can enrich the piece. Search for topics related to what you're writing about to find supporting material.
+Use `search_content` to find relevant existing content — published articles, case studies, and data points that can strengthen the piece. Search for topics related to what you're writing about to find supporting material.
 
 ### Voice profiles
 

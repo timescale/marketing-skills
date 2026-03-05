@@ -5,7 +5,8 @@ name: Release
 # in plugin.json, commits to `release`, and opens a PR to `main` with auto-merge.
 #
 # Auth strategy:
-#   - AUTOMATION_PAT for git push to protected branches and GitHub API operations
+#   - Deploy key (DEPLOY_KEY secret) for git push to protected branches
+#   - ORG_AUTOMATION_TOKEN for GitHub API operations (PR creation, auto-merge)
 #   - Default GITHUB_TOKEN for uploading release assets
 
 on:
@@ -24,7 +25,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: release
-          token: ${{ secrets.ORG_AUTOMATION_TOKEN }}
+
+      - name: Configure SSH for deploy key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Set git remote to SSH
+        run: |
+          git remote set-url origin git@github.com:${{ github.repository }}.git
 
       - name: Extract version from release tag
         id: version
@@ -59,8 +68,8 @@ jobs:
 
       - name: Commit version bump to release
         run: |
-          git config user.name "Eon"
-          git config user.email "123763385+timescale-automation@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add plugins/tiger-marketing-skills/.claude-plugin/plugin.json
           git commit -m "chore: bump version to ${{ steps.version.outputs.version }}" || echo "No changes to commit"
           git push origin release
@@ -91,14 +100,14 @@ jobs:
           This PR will auto-merge once checks pass."
           fi
 
-      # - name: Enable auto-merge
-      #   env:
-      #     GH_TOKEN: ${{ github.token }}
-      #   run: |
-      #     PR_NUMBER=$(gh pr list --base main --head release --state open --json number --jq '.[0].number')
-      #     if [ -n "$PR_NUMBER" ]; then
-      #       gh pr merge "$PR_NUMBER" --auto --squash
-      #       echo "Auto-merge enabled on PR #$PR_NUMBER"
-      #     else
-      #       echo "Warning: Could not find open PR to enable auto-merge"
-      #     fi
+      - name: Enable auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.ORG_AUTOMATION_TOKEN }}
+        run: |
+          PR_NUMBER=$(gh pr list --base main --head release --state open --json number --jq '.[0].number')
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr merge "$PR_NUMBER" --auto --merge
+            echo "Auto-merge enabled on PR #$PR_NUMBER"
+          else
+            echo "Warning: Could not find open PR to enable auto-merge"
+          fi

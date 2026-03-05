@@ -1,5 +1,7 @@
 # Tiger Data Marketing Skills
 
+> **Internal plugin.** This marketplace is built for the Tiger Data marketing team. The skills depend on internal Google Drive documents, Tiger Den, and org-specific context that aren't available outside our organization. You're welcome to browse the source and fork the framework for your own team, but installing the plugin as-is won't be useful outside Tiger Data.
+
 A shared plugin marketplace for the Tiger Data marketing team. Gives Claude specialized knowledge about our brand voice, audience, positioning, terminology, and content quality standards — so it produces better, more on-brand work.
 
 Works with both **Cowork** (Claude Desktop) and **Claude Code** (CLI).
@@ -85,9 +87,12 @@ To update: `git pull`.
 | Skill | Platforms | Description |
 |-------|-----------|-------------|
 | **brand-voice-writer** | Cowork, Claude Code | Write content using our brand voice, ICP profiles, positioning, and terminology |
+| **case-study-prep** | Cowork | Create Tiger Data case study interview prep documents |
 | **content-reviewer** | Cowork, Claude Code | Evaluate marketing content drafts against Tiger Data's quality rubrics |
+| **de-slop** | Cowork, Claude Code | Strip AI writing patterns from text to make it sound natural and human-written |
+| **internal-linking-optimizer** | Claude Code | Analyze and optimize internal link structure to improve site architecture, distribute page authority, and help search engines understand content relationships |
 | **seo-meta-optimizer** | Cowork, Claude Code | Optimize title tags and meta descriptions at scale (CSV input or URL crawling) |
-| **ghost-paper** | Cowork, Claude Code | Turn markdown into styled HTML reports with interactive charts and KPI strips |
+| **ghost-paper** | Cowork, Claude Code | Turn markdown into styled HTML reports with interactive charts and KPI strips. Invoke with `/ghost-paper` — only auto-triggers when you mention it by name. |
 | **doctor** | Cowork, Claude Code | Health check for the plugin environment (Google Drive, Tiger Den, Node.js) |
 | **setup** | Cowork, Claude Code | First-time onboarding — connects Google Drive, Tiger Den, and recommends skills |
 | **skill-contributor** | Cowork | Guided git workflow for non-technical contributors to submit skill changes |
@@ -106,20 +111,49 @@ Skills are folders containing a `SKILL.md` that gives Claude specialized instruc
 
 For example, ask Claude to "write a blog post about continuous aggregates" and the **brand-voice-writer** skill activates — giving Claude access to our brand voice guide, ICP profiles, positioning docs, and glossary so the output sounds like us.
 
-Under the hood, skills are thin orchestration files. They define *what to do* and *which tools to call*, but confidential context (brand voice details, sales frameworks, competitive positioning) lives in Google Drive reference docs — not in this repo. Each skill declares its references in frontmatter and reads `REFERENCES.md` at runtime to fetch docs from the shared Drive folder. This keeps the repo public-safe while giving skills full context.
+Under the hood, skills are thin orchestration files. They define *what to do* and *which tools to call*, but confidential context (brand voice details, sales frameworks, competitive positioning) lives outside this repo. Each skill declares its references in frontmatter and reads `REFERENCES.md` at runtime to fetch them. Skills try Tiger Den first (one API call for all docs), then fall back to Google Drive in Cowork. This keeps the repo public-safe while giving skills full context.
 
-### Optional: Tiger Den MCP Server
+## Tiger Den MCP Server
 
-Some skills can optionally use the [Tiger Den](https://tiger-den.vercel.app) MCP server for extra capabilities. All skills work without it, but with Tiger Den connected you get content search (find existing articles, case studies, and data points) and voice profiles (write in a specific team member's voice).
+Skills use the [Tiger Den](https://tiger-den.vercel.app) MCP server as the primary source for reference docs (brand voice guide, product marketing context, content rubrics). Tiger Den is also used for content search (find existing articles, case studies, and data points) and voice profiles (write in a specific team member's voice).
+
+**For Claude Code users, Tiger Den is required** — it's the only source for reference docs. In Cowork, Google Drive serves as a transitional fallback for skills that haven't been migrated yet.
+
+### Tiger Den setup instructions
+
+**Get an API key:** Sign in to [Tiger Den](https://tiger-den.vercel.app), go to [**API Keys**](https://tiger-den.vercel.app/api-keys) in the sidebar, click **Create API Key**, and copy the key.
+
+Then follow the instructions below depending if you're using Claude Cowork or Claude Code
 
 <details>
-<summary><strong>Tiger Den setup instructions</strong></summary>
+<summary><strong>Claude Cowork Setup</strong></summary>
 
-Requires Node.js v18+.
+#### Automatic setup
 
-1. **Get an API key:** Sign in to [Tiger Den](https://tiger-den.vercel.app), go to **API Keys** in the sidebar, click **Create API Key**, and copy the key.
+Copy and paste the following into your terminal (based on your OS):
 
-2. **For Cowork (Claude Desktop):** Open settings via **Settings** (hamburger menu) > **Developer** > **Edit Config** to find `claude_desktop_config.json`. Add:
+**macOS:**
+```bash
+if ! command -v brew >/dev/null 2>&1; then echo "Homebrew not found. Install from https://brew.sh and re-run."; exit 1; fi; brew update && brew install node && npx -y @mattstratton/tiger-den-mcp-setup
+```
+
+**Windows**
+```powershell
+winget install -e --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements; npx -y @mattstratton/tiger-den-mcp-setup
+```
+
+#### Manual Setup (if the above commands do not work)
+
+##### Prerequisites:
+- [Node.js](https://nodejs.org/) v18+ installed (provides `npx`)
+
+##### Setup:
+
+1. In Claude Desktop, go to **Settings** (hamburger menu) > **Developer** > **Edit Config**. This opens the config folder. If the file `claude_desktop_config.json` doesn't exist, create it. You can also find the file directly at:
+   - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+2. Add the Tiger Den server. The config differs slightly by OS:
 
    **macOS:**
    ```json
@@ -127,27 +161,61 @@ Requires Node.js v18+.
      "mcpServers": {
        "tiger_den": {
          "command": "npx",
-         "args": ["-y", "mcp-remote", "https://tiger-den.vercel.app/api/mcp/mcp", "--header", "Authorization: Bearer td_your_key_here"]
+         "args": [
+           "-y",
+           "mcp-remote",
+           "https://tiger-den.vercel.app/api/mcp/mcp",
+           "--header",
+           "Authorization: Bearer td_your_key_here"
+         ]
        }
      }
    }
    ```
 
-   **Windows:** Same as above but use `"command": "npx.cmd"`.
-
-3. **For Claude Code:** Add to `.mcp.json` or `~/.claude/settings.json`:
+   **Windows:**
    ```json
    {
      "mcpServers": {
        "tiger_den": {
-         "command": "npx",
-         "args": ["-y", "mcp-remote", "https://tiger-den.vercel.app/api/mcp/mcp", "--header", "Authorization: Bearer td_your_key_here"]
+         "command": "npx.cmd",
+         "args": [
+           "-y",
+           "mcp-remote",
+           "https://tiger-den.vercel.app/api/mcp/mcp",
+           "--header",
+           "Authorization: Bearer td_your_key_here"
+         ]
        }
      }
    }
    ```
 
-4. Restart Claude Desktop (fully quit and reopen) or restart Claude Code.
+   > **Windows note:** You must use `npx.cmd` instead of `npx`. Claude Desktop on Windows doesn't resolve bare command names the same way as macOS — the `.cmd` extension is required.
+
+   Replace `td_your_key_here` with your API key from the [API Keys page](#getting-an-api-key).
+
+3. Save the file, then fully quit Claude Desktop from the system tray (right-click the icon in the bottom-right and quit — just closing the window isn't enough). Reopen Claude Desktop and the Tiger Den tools will appear
+
+</details>
+<details>
+<summary><strong>Claude Code Setup</strong></summary>
+
+Add the server to Claude Code (run in a separate terminal, not inside Claude Code):
+```bash
+claude mcp add --transport http tiger_den https://tiger-den.vercel.app/api/mcp/mcp \
+  --header "Authorization: Bearer td_your_key_here"
+```
+
+For local development:
+```bash
+claude mcp add --transport http tiger_den http://localhost:3000/api/mcp/mcp \
+  --header "Authorization: Bearer td_your_key_here"
+```
+
+**Note:** Ensure the header value has no line breaks. If the server shows as "not authenticated" after adding, check `~/.claude.json` and verify the `Authorization` header is on a single line.
+
+Restart Claude Code. The tools will appear as `tiger_den` MCP tools.
 
 </details>
 
@@ -162,12 +230,13 @@ plugins/
     .claude-plugin/
       plugin.json               ← plugin metadata and version
     config.json                 ← runtime config (Drive folder ID, etc.)
-    REFERENCES.md               ← how skills fetch reference docs from Google Drive
+    REFERENCES.md               ← how skills fetch reference docs (Tiger Den + Google Drive fallback)
     _template/                  ← copy this to create a new skill
     build-plugin.sh             ← builds Cowork .zip for manual installs
     skills/                     ← all native skills (flat directory)
       brand-voice-writer/
       content-reviewer/
+      de-slop/
       doctor/
       ghost-paper/
       seo-meta-optimizer/
@@ -181,6 +250,11 @@ dist/                           ← build output (gitignored)
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for how to create new skills, update existing ones, and get your changes reviewed.
 
+## License
+
+Apache 2.0 — see [LICENSE](LICENSE) for details.
+
 ## Questions?
 
 Open a GitHub Issue or ask in the #marketing-tools Slack channel.
+

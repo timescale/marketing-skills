@@ -13,13 +13,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Verify source branch is release
+        env:
+          HEAD_REF: ${{ github.head_ref }}
         run: |
-          if [ "${{ github.head_ref }}" != "release" ]; then
+          if [ "$HEAD_REF" != "release" ]; then
             echo "❌ PRs to main must come from the 'release' branch."
-            echo "   Got: ${{ github.head_ref }}"
+            echo "   Got: $HEAD_REF"
             echo ""
             echo "   Merge your changes into 'release' first, then publish a"
             echo "   GitHub Release to trigger the automated PR to main."
             exit 1
           fi
           echo "✅ Source branch is 'release' — all good."
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Verify plugin version matches latest release tag
+        run: |
+          PLUGIN_VERSION=$(jq -r '.version' plugins/tiger-marketing-skills/.claude-plugin/plugin.json)
+          LATEST_TAG=$(git tag -l 'v*' --sort=-v:refname | head -1)
+
+          if [ -z "$LATEST_TAG" ]; then
+            echo "⚠️ No release tags found — skipping version check."
+            exit 0
+          fi
+
+          TAG_VERSION="${LATEST_TAG#v}"
+
+          if [ "$PLUGIN_VERSION" != "$TAG_VERSION" ]; then
+            echo "❌ Version mismatch: plugin.json has '$PLUGIN_VERSION' but latest tag is '$LATEST_TAG'"
+            exit 1
+          fi
+          echo "✅ plugin.json version ($PLUGIN_VERSION) matches latest release tag ($LATEST_TAG)"

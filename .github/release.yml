@@ -11,6 +11,7 @@ changelog:
   exclude:
     authors:
       - github-actions[bot]
+      - timescale-automation
     labels:
       - skip-changelog
   categories:
@@ -20,15 +21,18 @@ changelog:
     - title: "✨ Improvements"
       labels:
         - enhancement
+        - feature
     - title: "🐛 Bug Fixes"
       labels:
         - fix
+        - bug
     - title: "🏗️ Infrastructure"
       labels:
         - infra
     - title: "📝 Documentation"
       labels:
         - docs
+        - documentation
     - title: "📦 Other Changes"
       labels:
         - "*"

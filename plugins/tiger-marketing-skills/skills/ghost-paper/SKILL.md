@@ -1,7 +1,7 @@
 ---
 name: ghost-paper
 platforms: [cowork, claude-code]
-description: "Turn markdown into beautiful, self-contained HTML reports with interactive charts, KPI strips, and styled tables using Ghost Paper. Use when the user wants a polished report, executive summary, quarterly review, dashboard, or visual summary. Trigger on 'make a report', 'generate a report', 'create a dashboard', 'turn this into a nice HTML', or any request to take data/markdown and make it presentation-ready. Also use when the user provides data (CSV, tables, bullet points) and asks for it to be visualized or formatted professionally."
+description: "Turn markdown into styled, self-contained HTML reports using the Ghost Paper npm package. Only auto-trigger when the user explicitly mentions 'ghost paper' by name or asks to 'convert markdown to a styled HTML report.' For all other report, dashboard, or formatting requests, do NOT auto-trigger — the user should invoke /ghost-paper directly. Do NOT trigger on generic phrases like 'make a report', 'create a dashboard', 'visualize this data', or 'format this nicely' — those are handled by other skills (xlsx, docx, markdown, etc.)."
 ---
 
 # Ghost Paper Skill
