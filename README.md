@@ -111,20 +111,47 @@ For example, ask Claude to "write a blog post about continuous aggregates" and t
 
 Under the hood, skills are thin orchestration files. They define *what to do* and *which tools to call*, but confidential context (brand voice details, sales frameworks, competitive positioning) lives outside this repo. Each skill declares its references in frontmatter and reads `REFERENCES.md` at runtime to fetch them. Skills try Tiger Den first (one API call for all docs), then fall back to Google Drive in Cowork. This keeps the repo public-safe while giving skills full context.
 
-### Tiger Den MCP Server
+## Tiger Den MCP Server
 
 Skills use the [Tiger Den](https://tiger-den.vercel.app) MCP server as the primary source for reference docs (brand voice guide, product marketing context, content rubrics). Tiger Den is also used for content search (find existing articles, case studies, and data points) and voice profiles (write in a specific team member's voice).
 
 **For Claude Code users, Tiger Den is required** — it's the only source for reference docs. In Cowork, Google Drive serves as a transitional fallback for skills that haven't been migrated yet.
 
+### Tiger Den setup instructions
+
+**Get an API key:** Sign in to [Tiger Den](https://tiger-den.vercel.app), go to [**API Keys**](https://tiger-den.vercel.app/api-keys) in the sidebar, click **Create API Key**, and copy the key.
+
+Then follow the instructions below depending if you're using Claude Cowork or Claude Code
+
 <details>
-<summary><strong>Tiger Den setup instructions</strong></summary>
+<summary><strong>Claude Cowork Setup</strong></summary>
 
-Requires Node.js v18+.
+#### Automatic setup
 
-1. **Get an API key:** Sign in to [Tiger Den](https://tiger-den.vercel.app), go to **API Keys** in the sidebar, click **Create API Key**, and copy the key.
+Copy and paste the following into your terminal (based on your OS):
 
-2. **For Cowork (Claude Desktop):** Open settings via **Settings** (hamburger menu) > **Developer** > **Edit Config** to find `claude_desktop_config.json`. Add:
+**macOS:**
+```bash
+if ! command -v brew >/dev/null 2>&1; then echo "Homebrew not found. Install from https://brew.sh and re-run."; exit 1; fi; brew update && brew install node && npx -y @mattstratton/tiger-den-mcp-setup
+```
+
+**Windows**
+```powershell
+winget install -e --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements; npx -y @mattstratton/tiger-den-mcp-setup
+```
+
+#### Manual Setup (if the above commands do not work)
+
+##### Prerequisites:
+- [Node.js](https://nodejs.org/) v18+ installed (provides `npx`)
+
+##### Setup:
+
+1. In Claude Desktop, go to **Settings** (hamburger menu) > **Developer** > **Edit Config**. This opens the config folder. If the file `claude_desktop_config.json` doesn't exist, create it. You can also find the file directly at:
+   - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+2. Add the Tiger Den server. The config differs slightly by OS:
 
    **macOS:**
    ```json
@@ -132,27 +159,61 @@ Requires Node.js v18+.
      "mcpServers": {
        "tiger_den": {
          "command": "npx",
-         "args": ["-y", "mcp-remote", "https://tiger-den.vercel.app/api/mcp/mcp", "--header", "Authorization: Bearer td_your_key_here"]
+         "args": [
+           "-y",
+           "mcp-remote",
+           "https://tiger-den.vercel.app/api/mcp/mcp",
+           "--header",
+           "Authorization: Bearer td_your_key_here"
+         ]
        }
      }
    }
    ```
 
-   **Windows:** Same as above but use `"command": "npx.cmd"`.
-
-3. **For Claude Code:** Add to `.mcp.json` or `~/.claude/settings.json`:
+   **Windows:**
    ```json
    {
      "mcpServers": {
        "tiger_den": {
-         "command": "npx",
-         "args": ["-y", "mcp-remote", "https://tiger-den.vercel.app/api/mcp/mcp", "--header", "Authorization: Bearer td_your_key_here"]
+         "command": "npx.cmd",
+         "args": [
+           "-y",
+           "mcp-remote",
+           "https://tiger-den.vercel.app/api/mcp/mcp",
+           "--header",
+           "Authorization: Bearer td_your_key_here"
+         ]
        }
      }
    }
    ```
 
-4. Restart Claude Desktop (fully quit and reopen) or restart Claude Code.
+   > **Windows note:** You must use `npx.cmd` instead of `npx`. Claude Desktop on Windows doesn't resolve bare command names the same way as macOS — the `.cmd` extension is required.
+
+   Replace `td_your_key_here` with your API key from the [API Keys page](#getting-an-api-key).
+
+3. Save the file, then fully quit Claude Desktop from the system tray (right-click the icon in the bottom-right and quit — just closing the window isn't enough). Reopen Claude Desktop and the Tiger Den tools will appear
+
+</details>
+<details>
+<summary><strong>Claude Code Setup</strong></summary>
+
+Add the server to Claude Code (run in a separate terminal, not inside Claude Code):
+```bash
+claude mcp add --transport http tiger_den https://tiger-den.vercel.app/api/mcp/mcp \
+  --header "Authorization: Bearer td_your_key_here"
+```
+
+For local development:
+```bash
+claude mcp add --transport http tiger_den http://localhost:3000/api/mcp/mcp \
+  --header "Authorization: Bearer td_your_key_here"
+```
+
+**Note:** Ensure the header value has no line breaks. If the server shows as "not authenticated" after adding, check `~/.claude.json` and verify the `Authorization` header is on a single line.
+
+Restart Claude Code. The tools will appear as `tiger_den` MCP tools.
 
 </details>
 
