@@ -22,3 +22,11 @@ plans/
 dist/
 
 test-slack-format.sh
+
+# worktrees
+.worktrees/
+worktrees/
+
+# claude code - ignore local/generated files, keep project config
+.claude/worktrees/
+.claude/settings.local.json
