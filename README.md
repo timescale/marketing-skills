@@ -87,8 +87,10 @@ To update: `git pull`.
 | Skill | Platforms | Description |
 |-------|-----------|-------------|
 | **brand-voice-writer** | Cowork, Claude Code | Write content using our brand voice, ICP profiles, positioning, and terminology |
+| **case-study-prep** | Cowork | Create Tiger Data case study interview prep documents |
 | **content-reviewer** | Cowork, Claude Code | Evaluate marketing content drafts against Tiger Data's quality rubrics |
 | **de-slop** | Cowork, Claude Code | Strip AI writing patterns from text to make it sound natural and human-written |
+| **internal-linking-optimizer** | Claude Code | Analyze and optimize internal link structure to improve site architecture, distribute page authority, and help search engines understand content relationships |
 | **seo-meta-optimizer** | Cowork, Claude Code | Optimize title tags and meta descriptions at scale (CSV input or URL crawling) |
 | **ghost-paper** | Cowork, Claude Code | Turn markdown into styled HTML reports with interactive charts and KPI strips. Invoke with `/ghost-paper` — only auto-triggers when you mention it by name. |
 | **doctor** | Cowork, Claude Code | Health check for the plugin environment (Google Drive, Tiger Den, Node.js) |
@@ -255,3 +257,4 @@ Apache 2.0 — see [LICENSE](LICENSE) for details.
 ## Questions?
 
 Open a GitHub Issue or ask in the #marketing-tools Slack channel.
+
