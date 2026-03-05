@@ -1,7 +1,7 @@
 ---
 name: email-nurture-planner
 platforms: [cowork, claude-code]
-description: "Plan content-driven email nurture sequences for TigerData — strategy, structure, and per-email outlines grounded in our audience and brand voice. Use this skill when the user asks to plan a drip campaign, nurture sequence, email series, onboarding emails, educational email flow, or lead nurture strategy. Also trigger when they mention email cadence, drip sequence, email funnel, subscriber journey, or ask 'what emails should we send about [topic]?' This skill plans the sequence — it does not write full email copy. For writing emails, hand off to brand-voice-writer."
+description: "Plan content-driven email nurture sequences for Tiger Data — strategy, structure, and per-email outlines grounded in our audience and brand voice. Use this skill when the user asks to plan a drip campaign, nurture sequence, email series, onboarding emails, educational email flow, or lead nurture strategy. Also trigger when they mention email cadence, drip sequence, email funnel, subscriber journey, or ask 'what emails should we send about [topic]?' This skill plans the sequence — it does not write full email copy. For writing emails, hand off to brand-voice-writer."
 references:
   - product-marketing-context
   - brand-voice-guide
@@ -9,7 +9,7 @@ references:
 
 # Email Nurture Planner
 
-This skill helps you plan content-driven email nurture sequences for TigerData. It produces a strategic sequence plan — goals, audience mapping, email-by-email outlines with subject line directions, key messages, and CTAs — but stops short of writing full email copy. The output is a blueprint that a writer (or the brand-voice-writer skill) can execute against.
+This skill helps you plan content-driven email nurture sequences for Tiger Data. It produces a strategic sequence plan — goals, audience mapping, email-by-email outlines with subject line directions, key messages, and CTAs — but stops short of writing full email copy. The output is a blueprint that a writer (or the brand-voice-writer skill) can execute against.
 
 ## When to use this skill
 
@@ -64,7 +64,7 @@ Use this progression framework for content/education nurture sequences:
 
 1. **Hook** (Email 1): Validate the problem or curiosity that brought them in. Mirror the entry trigger. Establish what they'll learn across the sequence.
 2. **Foundation** (Emails 2-3): Teach core concepts. Build understanding of the problem space. Use concrete examples and data points from our content library.
-3. **Application** (Emails 3-4): Show how to apply the concepts. Link to tutorials, guides, or case studies. Start connecting ideas to TigerData's approach (without hard selling).
+3. **Application** (Emails 3-4): Show how to apply the concepts. Link to tutorials, guides, or case studies. Start connecting ideas to Tiger Data's approach (without hard selling).
 4. **Proof** (Email 4-5): Provide evidence — benchmarks, customer stories, comparisons. Make the case through results, not features.
 5. **Action** (Final email): Clear, single CTA aligned with the sequence goal. Summarize the journey. Make the next step feel like a natural conclusion, not a sales push.
 
@@ -84,7 +84,7 @@ For each email in the sequence, produce:
 - **Target length**: Approximate word count for the email body. Use 50-125 words for transactional/short emails, 150-300 words for educational content, 300-500 words for story-driven emails. This guides the writer during hand-off to brand-voice-writer.
 - **Content outline**: 3-5 bullet points covering what the email body should address
 - **CTA**: What action the email drives and where it links
-- **Supporting content**: Existing TigerData content to reference or link to (blog posts, docs, case studies). If Tiger Den MCP is available, search for these; otherwise note what type of content would be ideal.
+- **Supporting content**: Existing Tiger Data content to reference or link to (blog posts, docs, case studies). If Tiger Den MCP is available, search for these; otherwise note what type of content would be ideal.
 
 ### 5. Add sequence metadata
 
@@ -135,7 +135,7 @@ These features require the Tiger Den MCP server. If the tools aren't available, 
 
 ### Content search
 
-If the `search_content` tool is available, use it to find existing TigerData content that each email could reference or link to. Search for topics related to each email's theme. This grounds the sequence in real content rather than hypothetical links.
+If the `search_content` tool is available, use it to find existing Tiger Data content that each email could reference or link to. Search for topics related to each email's theme. This grounds the sequence in real content rather than hypothetical links.
 
 **Freshness filter:** Only use content published within the last 18 months. Use the `published_after` parameter when calling `search_content` to filter results (e.g., `published_after: "2024-09-01"` if the current date is March 2026). Older content may reference deprecated features, outdated benchmarks, or retired product names. If the only results for a topic are older than 18 months, note the gap in the supporting content field (e.g., "No recent content available on this topic; consider creating a new piece") rather than linking stale material.
 
