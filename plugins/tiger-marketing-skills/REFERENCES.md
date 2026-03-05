@@ -1,8 +1,47 @@
-# How to Fetch Reference Docs from Google Drive
+# How to Fetch Reference Docs
 
-Skills in this plugin declare which reference docs they need in their frontmatter. The docs themselves live in a shared Google Drive folder — not bundled in the plugin. This file explains how to fetch them.
+Skills in this plugin declare which reference docs they need in their frontmatter. The docs themselves live outside the plugin. This file explains how to fetch them.
 
-## Reference path format
+## Fetching strategy
+
+Try sources in this order. Stop as soon as you successfully load the docs:
+
+1. **Tiger Den MCP** (works in Cowork and Claude Code)
+2. **Google Drive** (Cowork only — transitional fallback for skills not yet updated to use Tiger Den)
+
+## Source 1: Tiger Den MCP (preferred)
+
+If the `get_marketing_context` tool is available, use it. This is the fastest path — one tool call, all docs returned together.
+
+**Fetch all declared references in one call:**
+
+```
+get_marketing_context(slugs: ["product-marketing-context", "brand-voice-guide"])
+```
+
+The slugs match the reference names in the skill's frontmatter. Pass all of them as an array and you get everything in a single round-trip.
+
+**If you only need one doc**, use `get_marketing_reference` instead:
+
+```
+get_marketing_reference(slug: "brand-voice-guide")
+```
+
+**If you're not sure what's available**, use `list_marketing_references` to see all available reference docs and their slugs.
+
+**If Tiger Den fails** (tool not available or connection error): fall through to Source 2 if you're in Cowork. In Claude Code, Tiger Den is the only source — see the error handling section below.
+
+## Source 2: Google Drive (transitional fallback — Cowork only)
+
+Some skills haven't been updated to use Tiger Den yet and still reference Google Drive directly. This section supports those skills during the transition. Once all skills are migrated, this section will be removed.
+
+This path only works in Cowork where the Google Drive connector is available.
+
+### Setup
+
+Read `config.json` from the plugin root. It contains the shared Drive folder ID under the `references_folder_id` key. Use that value wherever `<folder_id>` appears below.
+
+### Reference path format
 
 Reference names in skill frontmatter can be:
 
@@ -12,15 +51,9 @@ Reference names in skill frontmatter can be:
 When a reference has a `/`, treat each segment before the last as a subfolder to traverse.
 The last segment is the document name.
 
-## Step 1: Get the folder ID
+### Fetching with the Google Drive connector
 
-Read `config.json` from the plugin root. It contains the shared Drive folder ID under the `references_folder_id` key. Use that value wherever `<folder_id>` appears below.
-
-## Step 2: Detect your runtime and fetch
-
-### Cowork (Google Drive connector)
-
-If the `google_drive_search` tool is available, you're in Cowork. To fetch a reference doc:
+If the `google_drive_search` tool is available:
 
 **Simple reference** (no `/` in the name):
 
@@ -50,46 +83,15 @@ If the `google_drive_search` tool is available, you're in Cowork. To fetch a ref
    google_drive_fetch(document_ids: ["<uri-from-search>"])
    ```
 
-**Performance note:** Each folder level costs one extra Drive API call. In practice this is one or two extra calls at most and is negligible. If a skill needs multiple docs from the same subfolder, resolve the subfolder once and reuse the folder ID for all doc lookups.
-
-You can batch multiple fetches into a single `google_drive_fetch` call by passing multiple document IDs at once. When a skill needs several reference docs, search for all of them first, collect the URIs, then fetch them in one call.
-
-**If the Google Drive connector isn't available:** Tell the user to enable the Google Drive connector in Cowork settings (Settings → Connectors → Google Drive). It's installed by default for all Tiger Data teammates.
-
-### Claude Code (gdrive CLI)
-
-If the `google_drive_search` tool is NOT available, you're in Claude Code. Use the `gdrive` CLI:
-
-**Simple reference:**
-
-1. List files in the shared folder:
-   ```bash
-   gdrive files list --parent <folder_id>
-   ```
-2. Find the file ID for the doc you need from the output, then download it:
-   ```bash
-   gdrive files download --id <file-id> --stdout
-   ```
-
-**Path reference:**
-
-1. List files in the root folder and find the subfolder:
-   ```bash
-   gdrive files list --parent <root_folder_id>
-   ```
-2. Find the subfolder ID from the output, then list its contents:
-   ```bash
-   gdrive files list --parent <subfolder_id>
-   ```
-3. Find the doc ID and download:
-   ```bash
-   gdrive files download --id <file-id> --stdout
-   ```
-
-**If `gdrive` is not installed:** Tell the user to install it (`brew install gdrive`) and authenticate (`gdrive auth`) using their Google Workspace account. This is a one-time setup.
+**Performance note:** You can batch multiple fetches into a single `google_drive_fetch` call by passing multiple document IDs at once. When a skill needs several reference docs, search for all of them first, collect the URIs, then fetch them in one call.
 
 ## Error handling
 
-If a Drive fetch fails (doc not found, permissions error, network issue), do NOT proceed silently. Tell the user which reference doc couldn't be loaded and why. The content quality depends on having the right context — better to surface the problem than write without it.
+If reference docs can't be loaded, do NOT proceed silently. Tell the user which docs couldn't be loaded and provide actionable guidance:
 
-If a subfolder can't be resolved (no folder with that name in the parent), report the full path that failed, e.g.: "Could not find subfolder 'matty' in the references folder. Check that the subfolder exists in Google Drive."
+- **Tiger Den not available:** "The Tiger Den MCP server isn't connected. You can add it in your MCP settings." In Cowork, fall through to Google Drive. In Claude Code, this is the only source — the user needs to connect Tiger Den to proceed.
+- **Tiger Den connection error:** "Tiger Den returned an error. Check that the MCP server is running." In Cowork, fall through to Google Drive.
+- **Google Drive connector not available (Cowork):** "The Google Drive connector isn't enabled. You can enable it in Cowork settings (Settings → Connectors → Google Drive), or connect the Tiger Den MCP server instead."
+- **Doc not found in Google Drive:** "Could not find '[doc-name]' in the shared references folder. Check that it exists in Google Drive."
+- **Subfolder not found:** "Could not find subfolder '[name]' in the references folder. Check that the subfolder exists in Google Drive."
+- **All sources failed:** "Reference docs couldn't be loaded from Tiger Den or Google Drive. Content quality depends on having the right context — I'd rather surface this than write without it. Check your MCP and connector settings."

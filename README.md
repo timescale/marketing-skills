@@ -109,11 +109,13 @@ Skills are folders containing a `SKILL.md` that gives Claude specialized instruc
 
 For example, ask Claude to "write a blog post about continuous aggregates" and the **brand-voice-writer** skill activates — giving Claude access to our brand voice guide, ICP profiles, positioning docs, and glossary so the output sounds like us.
 
-Under the hood, skills are thin orchestration files. They define *what to do* and *which tools to call*, but confidential context (brand voice details, sales frameworks, competitive positioning) lives in Google Drive reference docs — not in this repo. Each skill declares its references in frontmatter and reads `REFERENCES.md` at runtime to fetch docs from the shared Drive folder. This keeps the repo public-safe while giving skills full context.
+Under the hood, skills are thin orchestration files. They define *what to do* and *which tools to call*, but confidential context (brand voice details, sales frameworks, competitive positioning) lives outside this repo. Each skill declares its references in frontmatter and reads `REFERENCES.md` at runtime to fetch them. Skills try Tiger Den first (one API call for all docs), then fall back to Google Drive in Cowork. This keeps the repo public-safe while giving skills full context.
 
-### Optional: Tiger Den MCP Server
+### Tiger Den MCP Server
 
-Some skills can optionally use the [Tiger Den](https://tiger-den.vercel.app) MCP server for extra capabilities. All skills work without it, but with Tiger Den connected you get content search (find existing articles, case studies, and data points) and voice profiles (write in a specific team member's voice).
+Skills use the [Tiger Den](https://tiger-den.vercel.app) MCP server as the primary source for reference docs (brand voice guide, product marketing context, content rubrics). Tiger Den is also used for content search (find existing articles, case studies, and data points) and voice profiles (write in a specific team member's voice).
+
+**For Claude Code users, Tiger Den is required** — it's the only source for reference docs. In Cowork, Google Drive serves as a transitional fallback for skills that haven't been migrated yet.
 
 <details>
 <summary><strong>Tiger Den setup instructions</strong></summary>
@@ -165,7 +167,7 @@ plugins/
     .claude-plugin/
       plugin.json               ← plugin metadata and version
     config.json                 ← runtime config (Drive folder ID, etc.)
-    REFERENCES.md               ← how skills fetch reference docs from Google Drive
+    REFERENCES.md               ← how skills fetch reference docs (Tiger Den + Google Drive fallback)
     _template/                  ← copy this to create a new skill
     build-plugin.sh             ← builds Cowork .zip for manual installs
     skills/                     ← all native skills (flat directory)

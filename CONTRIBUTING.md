@@ -38,7 +38,7 @@ The easiest way to work on skills is with Cowork mode in Claude Desktop. This gi
 
 This will have you sign in via the GitHub website and now `git` will know who you are.
 
-2. **Open Claude Desktop** and start a new **Cowork session** (click the Cowork tab or start a new Cowork conversation).
+1. **Open Claude Desktop** and start a new **Cowork session** (click the Cowork tab or start a new Cowork conversation).
 
 3. **Select the repo folder:** Cowork has the option to "work in a folder". Navigate to wherever you cloned `marketing-skills/` and select it. This gives Claude read/write access to the skill files.
 
@@ -94,12 +94,12 @@ All skills live in `plugins/tiger-marketing-skills/skills/`. Each skill is its o
 
 5. **Test it:** Try your skill in a Claude conversation to make sure it triggers correctly and produces good output. You don't need a formal test suite — just verify it works on 2-3 realistic prompts.
 
-   **Testing in Cowork:** Skills are loaded from the installed plugin, not from local files. To test a new or modified skill in Cowork, you need to build and install the plugin locally:
-   ```bash
-   cd plugins/tiger-marketing-skills
-   ./build-plugin.sh --target cowork
-   ```
-   Then upload `dist/tigerdata-marketing-skills-<version>.zip` to Cowork (Browse plugins → My Plugins → + → Upload plugin) and **start a new session** — updated skills only take effect in new sessions, not the current one.
+**Testing in Cowork:** Skills are loaded from the installed plugin, not from local files. To test a new or modified skill in Cowork, you need to build and install the plugin locally:
+```bash
+cd plugins/tiger-marketing-skills
+./build-plugin.sh --target cowork
+```
+Then upload `dist/tigerdata-marketing-skills-<version>.zip` to Cowork (Browse plugins → My Plugins → + → Upload plugin) and **start a new session** — updated skills only take effect in new sessions, not the current one.
 
 6. **Submit a PR:** Push your branch and open a pull request **targeting the `release` branch**. The PR template includes a checklist to make sure everything's in order. If you're not comfortable with git, ask Claude in Cowork to "help me submit my changes" — the **skill-contributor** skill will walk you through it step by step.
 
@@ -114,10 +114,11 @@ When a source document changes in Google Drive:
 1. Open the Google Doc
 2. Go to **File > Download > Markdown (.md)**
 3. Review the downloaded file and trim anything not relevant to the skill
-4. Replace the corresponding file in the skill's `references/` folder
-5. Submit a PR
+4. ~~Replace the corresponding file in the skill's `references/` folder~~
+5. ~~Submit a PR~~
+6. Update the file in the Tiger Den web interface (currently only Corey or Matty)
 
-The repo is the source of truth for reference docs. Not everything in a Google Doc needs to go into the skill — just the parts Claude needs to do its job.
+Tiger Den is the source of truth for reference files. Not everything in a Google Doc needs to go into the skill — just the parts Claude needs to do its job.
 
 ## PR labels
 
