@@ -90,7 +90,19 @@ Assume the audience is senior engineers and database architects. Avoid hype lang
 
 **For both modes**, the three highest-impact changes should be specific and actionable, not generic advice. The user is going to revise based on your feedback, so prioritize the changes that would move the needle most.
 
-### 7. Brand voice spot-check
+### 7. Editorial quality check
+
+After the structural rubric, do a quick pass on these five editorial fundamentals. These are pass/fail checks — flag issues directly, no scoring needed.
+
+1. **Definition precision** — When the piece introduces a key concept, does it define it by its primary function and organizing principle? Flag vague or circular definitions. Sections should open with strong, specific statements that immediately address the topic.
+2. **Evidence and specificity** — Are broad claims backed by concrete data (compression ratios, query speed improvements, cost reductions)? Are real technologies and industry examples named explicitly rather than alluded to generically?
+3. **Strategic linking** — Does the piece link key concepts and product claims to internal resources (docs, case studies, feature pages)? Does it link general technical terms to authoritative external sources? Flag missed linking opportunities.
+4. **Readability and flow** — Are there abrupt transitions or disconnected ideas? After introducing a technical concept, does the piece immediately explain its practical benefit? Flag sections where the reader has to infer the "so what."
+5. **Terminology consistency** — Are architectural labels and product categories used consistently throughout? Flag cases where the same concept gets different names without explanation. (The next step checks whether terminology is *correct*; this check covers whether it's *consistent*.)
+
+Keep this section brief. If all five checks pass cleanly, say so and move on.
+
+### 8. Brand voice spot-check
 
 Separately from the rubric, flag any issues with:
 
@@ -100,7 +112,7 @@ Separately from the rubric, flag any issues with:
 
 Keep this section short. If there are no issues, say so. This is a spot-check, not a full brand audit.
 
-### 8. Offer next steps
+### 9. Offer next steps
 
 After the review, ask whether the user wants:
 - A deeper dive on any specific dimension
