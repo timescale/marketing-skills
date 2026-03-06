@@ -89,6 +89,7 @@ To update: `git pull`.
 | **brand-voice-writer** | Cowork, Claude Code | Write content using our brand voice, ICP profiles, positioning, and terminology |
 | **case-study-prep** | Cowork | Create Tiger Data case study interview prep documents |
 | **content-reviewer** | Cowork, Claude Code | Evaluate marketing content drafts against Tiger Data's quality rubrics |
+| **deck-builder** | Cowork, Claude Code | Turn any document into a branded slide deck. Generates .pptx in Claude Code, structured markdown in Cowork. |
 | **de-slop** | Cowork, Claude Code | Strip AI writing patterns from text to make it sound natural and human-written |
 | **internal-linking-optimizer** | Claude Code | Analyze and optimize internal link structure to improve site architecture, distribute page authority, and help search engines understand content relationships |
 | **seo-meta-optimizer** | Cowork, Claude Code | Optimize title tags and meta descriptions at scale (CSV input or URL crawling) |
