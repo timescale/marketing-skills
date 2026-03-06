@@ -1,5 +1,7 @@
 # Tiger Data Marketing Skills
 
+(Having an issue with this plugin? [**Submit a new issue**](https://github.com/timescale/marketing-skills-private/issues/new/choose) - Tiger Data employees only)
+
 > **Internal plugin.** This marketplace is built for the Tiger Data marketing team. The skills depend on internal Google Drive documents, Tiger Den, and org-specific context that aren't available outside our organization. You're welcome to browse the source and fork the framework for your own team, but installing the plugin as-is won't be useful outside Tiger Data.
 
 A shared plugin marketplace for the Tiger Data marketing team. Gives Claude specialized knowledge about our brand voice, audience, positioning, terminology, and content quality standards — so it produces better, more on-brand work.
@@ -254,8 +256,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to create new skills, update exis
 ## License
 
 Apache 2.0 — see [LICENSE](LICENSE) for details.
-
-## Questions?
-
-Open a GitHub Issue or ask in the #marketing-tools Slack channel.
-
