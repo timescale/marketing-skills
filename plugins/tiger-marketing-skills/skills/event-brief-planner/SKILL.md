@@ -39,7 +39,9 @@ Fetch context before generating any copy so all assets are grounded in who we ar
 
 ### Step 2: Collect the event overview (Part 1)
 
-Gather event facts in conversational groups. Do not ask everything at once. Do not silently assume defaults. If the user provides a link to the event website, read it first and pre-fill what you can infer, then confirm.
+Gather event facts in conversational groups. Do not ask everything at once. Do not silently assume defaults.
+
+**If the user provides a link to the event website,** read it first and pre-fill as many fields as possible (event name, type, dates, location, audience profile, whether we are listed as a sponsor). Present the pre-filled fields in Group A and ask the user to confirm or correct them rather than re-asking for information the page already provides.
 
 **Group A: Event basics (always ask first)**
 - Event name (required)
@@ -83,7 +85,7 @@ After collecting Part 1, present a formatted summary of the event overview. Then
 | Landing page(s) | Yes | Ask how many (typically 1-2) |
 | Website banner | Yes | 1 |
 | Newsletter blurb(s) | Yes | Ask how many (typically 1-2) and launch dates |
-| Pre-event email | Yes | Ask launch date and audience segment |
+| Pre-event email | Yes | Ask launch date and audience segment. Stagger at least 3-5 days from any newsletter blurb so the same audience is not hit twice in the same window. |
 | Post-event email | Yes | 1 |
 | Organic social posts | Yes | Ask how many per phase: pre-event, live, post-event |
 | Paid ads | No | Ask if needed; if yes, which channels |
@@ -117,6 +119,8 @@ For each landing page, generate:
 - **Design asset notes:** Suggest what visuals are needed (hero banner, event logo, etc.)
 
 Lead with what the attendee gets, not what Tiger Data is doing. Frame the value prop using the target audience from Part 1.
+
+**Avoid copy overlap with the pre-event email.** The landing page and the pre-event email serve different contexts (inbound vs. push) even though they share a message. Use a different lead-in and structure for each. If the landing page opens with the audience's current stack, the email should open with the event value prop, or vice versa.
 
 #### 4b. Website banner(s)
 
@@ -159,7 +163,7 @@ Generate:
 - **CTA:** Next step (e.g., "Start a free trial," "Read the recap," "Watch the recording")
 - **Offer URL(s) with UTMs**
 - **Signature:** Match pre-event email sender
-- **Recipients/send list:** Segmented list (e.g., "booth visitors, attendees, no-show registrants, meeting follow-ups")
+- **Recipients/send list:** Segmented list (e.g., "booth visitors, attendees, no-show registrants, meeting follow-ups"). Only list segments that are buildable based on how leads will be captured. If lead capture method hasn't been discussed yet, flag it: "These segments depend on how booth leads are captured. Confirm scan method in the KPI tracking section."
 - **Design asset notes**
 
 #### 4f. Organic social posts
@@ -173,7 +177,11 @@ For each requested post (pre-event, live, post-event), generate:
 - **Accounts to tag:** Suggest the event organizer's account, any co-speakers, partner companies
 - **Image notes:** Suggest what visual to include (event graphic, speaker card, booth photo, etc.)
 
-Pre-event posts build anticipation. Live posts capture energy and real moments. Post-event posts share highlights and drive follow-up.
+Pre-event posts build anticipation. Post-event posts share highlights and drive follow-up.
+
+**Live posts are drafts, not final copy.** A pre-written "live" post cannot capture real energy. Write these as templates with bracketed placeholders for real-time details (e.g., "[specific conversation topic]", "[speaker name]", "[booth photo]"). Note in the output that live posts should be adapted on-site with actual moments, photos, and specifics.
+
+**Platform tone:** LinkedIn posts can be longer and more narrative. X posts should be punchier, more conversational, and written as native X content, not compressed LinkedIn posts. If the same message works on both platforms without changes, the X version probably needs more personality.
 
 #### 4g. Paid ads
 
@@ -204,6 +212,7 @@ After generating all assets, review everything against the brand voice guide:
 4. **Character limits respected.** Re-verify: banner copy (120 chars), preheader (85 chars), X posts (280 chars), ad copy (platform-specific limits).
 5. **Terminology correct.** Product names, capitalization, and technical terms per the glossary in product-marketing-context.
 6. **CTAs varied and natural.** Not every asset should say the same thing. Vary CTA language while keeping the action clear and consistent.
+7. **No copy-paste between assets.** Read the landing page body and pre-event email body side by side. If the opening paragraph or structure is too similar, rewrite one. Each asset should stand on its own even though they share a messaging angle.
 
 Fix any issues inline and note what changed. If no issues are found, state "No voice issues found."
 
@@ -248,6 +257,8 @@ These features require the Tiger Den MCP server. If the tools are not available,
 ### Content search
 
 If `search_content` is available, use it when generating copy to find existing Tiger Data content to reference or link to. Search for topics related to each asset's theme. This grounds copy in real content rather than hypothetical links. Apply an 18-month freshness filter using the `published_after` parameter. If no recent content exists for a topic, note the gap (e.g., "No recent content on this topic; consider creating a new piece") rather than linking stale material.
+
+**Actually use what you find.** Do not just search and move on. If you find a relevant blog post, case study, or guide, weave it into the copy. For example, link a specific article in the post-event email's "read the docs" CTA, or reference a case study in the landing page body. Generic "read the docs" links are weaker than specific content recommendations.
 
 ### UTM link generation
 
