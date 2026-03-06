@@ -29,6 +29,8 @@ git checkout -b feature/short-description
 
 Never commit directly to `main` or `release`. All work happens on feature branches, and all PRs target `release`.
 
+When making git commits, do NOT include a Co-Authored-By line for Claude.
+
 ### Cowork sandbox limitations
 
 In Cowork (Claude Desktop), git **read** commands work but must be run with `GIT_OPTIONAL_LOCKS=0` to prevent stale `.git/index.lock` files. Even read commands like `git status` and `git diff` can create lock files when refreshing the index, and the Cowork sandbox can't clean them up — leaving a lock file that breaks all subsequent git operations for the user.
