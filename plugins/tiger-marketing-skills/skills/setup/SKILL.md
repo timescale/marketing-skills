@@ -71,57 +71,7 @@ gdrive files list --parent 1DUPUkDyG8bkQgoWWI4kvoLTyMk_sT1n2
 
 **If auth fails:** Tell them to re-authenticate with `gdrive auth`.
 
-## Step 3: Check Node.js (Cowork only)
-
-Node.js is required in Cowork because the Tiger Den MCP config uses `npx` to run `mcp-remote`. **Claude Code does not need Node.js** — it connects to Tiger Den directly over HTTP via `claude mcp add`.
-
-If you're in Claude Code, skip this step entirely.
-
-If you're in Cowork, check by seeing if the Tiger Den MCP is already working (Step 4). If Tiger Den works, skip this step — Node is clearly installed.
-
-If Tiger Den is NOT working in Cowork, ask the user to check whether Node is installed. Use the OS detected in Step 1:
-
-**macOS:**
-
-> "Before we set up Tiger Den, we need to make sure Node.js is installed. Open **Terminal** (Spotlight → type 'Terminal' → Enter) and paste this:"
->
-> ```
-> node --version
-> ```
->
-> "What does it show? If you see a version number like `v20.x.x` or `v22.x.x`, you're good. If you see 'command not found', we need to install it."
-
-**Windows:**
-
-> "Before we set up Tiger Den, we need to make sure Node.js is installed. Open **PowerShell** (Start → type 'PowerShell' → Enter) and paste this:"
->
-> ```
-> node --version
-> ```
->
-> "What does it show? If you see a version number like `v20.x.x` or `v22.x.x`, you're good. If you see an error, we need to install it."
-
-**If Node is missing (macOS):**
-
-> "The easiest way to install Node on a Mac is with Homebrew. Paste this into Terminal:"
->
-> ```
-> brew install node
-> ```
->
-> "If you don't have Homebrew either, paste this first, then run the command above:"
->
-> ```
-> /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-> ```
->
-> "Let me know when that finishes."
-
-**If Node is missing (Windows):**
-
-> "Download the Node.js installer from [nodejs.org](https://nodejs.org/) — grab the LTS version. Run the installer with the default options. Once it's done, close and reopen your terminal, then try `node --version` again."
-
-## Step 4: Check Tiger Den MCP
+## Step 3: Set up Tiger Den
 
 Try (same in both runtimes):
 
@@ -129,11 +79,11 @@ Try (same in both runtimes):
 search_content(query: "test", limit: 1)
 ```
 
-**If it works:** Tell the user Tiger Den is connected and move on.
+**If it works:** Tell the user Tiger Den is connected and move on to Step 4.
 
 **If it fails:** Walk them through setting it up.
 
-> "Tiger Den is our content library — some skills use it to find existing content, check what's been published, and avoid duplicating topics. Let's connect it."
+> "Tiger Den is our content library — skills use it to find reference docs (like our brand voice guide), search existing content, and write in team members' voices. Let's connect it."
 >
 > "First, you'll need a Tiger Den API key. Here's how to get one:"
 >
@@ -141,10 +91,8 @@ search_content(query: "test", limit: 1)
 > 2. Click **API Keys** in the sidebar (or go to `/api-keys`)
 > 3. Click **Create API Key**, give it a label like "Claude Desktop", and copy the key
 > 4. The key is only shown once, so don't close that page yet!
->
-> "Paste your API key here and I'll give you the exact config to add. It should start with `td_`."
 
-**After they provide the API key**, use the runtime and OS to give the right setup instructions.
+Then use the runtime and OS to give the right setup instructions.
 
 ### Tiger Den setup in Claude Code
 
@@ -163,32 +111,73 @@ If it still doesn't work after restart, suggest they check `~/.claude.json` and 
 
 ### Tiger Den setup in Cowork (macOS)
 
+There's a one-liner that handles installing Node.js and configuring the Tiger Den MCP server automatically. It will prompt the user for their API key during the setup.
+
+The one-liner requires Homebrew. First, ask the user to check if Homebrew is installed:
+
+> "We have a one-liner that sets everything up for you — Node.js, the Tiger Den connection, all of it. It needs Homebrew first. Open **Terminal** (Spotlight → type 'Terminal' → Enter) and paste this:"
+>
+> ```
+> brew --version
+> ```
+>
+> "If you see a version number, you're all set. If you see 'command not found', we need to install Homebrew first."
+
+**If Homebrew is missing:**
+
+> "No problem — Homebrew is a package manager for Mac. Paste this into Terminal to install it:"
+>
+> ```
+> /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+> ```
+>
+> "Follow the prompts — it may ask for your Mac password. This can take a few minutes. Let me know when it finishes."
+
+**Once Homebrew is confirmed**, give them the one-liner:
+
+> "Now paste this into Terminal — it will install Node.js (if needed) and set up the Tiger Den connection. It will ask you for your API key during the setup, so have it ready."
+>
+> ```
+> brew update && brew install node && npx -y @mattstratton/tiger-den-mcp-setup
+> ```
+>
+> "Follow the prompts. When it asks for your API key, paste the one you copied from Tiger Den (it starts with `td_`). Let me know when it's done."
+
+### Tiger Den setup in Cowork (Windows)
+
+There's a one-liner for Windows too. Tell them:
+
+> "Open **PowerShell** (Start → type 'PowerShell' → Enter) and paste this — it will install Node.js and set up the Tiger Den connection. It will ask you for your API key during the setup, so have it ready."
+>
+> ```powershell
+> winget install -e --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements; npx -y @mattstratton/tiger-den-mcp-setup
+> ```
+>
+> "Follow the prompts. When it asks for your API key, paste the one you copied from Tiger Den (it starts with `td_`). Let me know when it's done."
+
+### After the one-liner completes (Cowork only)
+
+> "Now **restart Claude Desktop** — quit fully from the system tray (right-click the icon and quit — just closing the window isn't enough). Reopen Claude Desktop, come back to this chat, and type `/doctor` to verify everything's working."
+
+### If the one-liner doesn't work (Cowork fallback)
+
+If the one-liner fails or the user reports issues, fall back to manual configuration. Ask the user to share any error messages they saw.
+
+**Manual macOS setup:**
+
 The config file is at `~/Library/Application Support/Claude/claude_desktop_config.json`. Tell them:
 
-> "Great! Now we need to add Tiger Den to your Claude settings. Open **Terminal** and paste this:"
+> "Let's set it up manually instead. First, tell me your API key (the one that starts with `td_`)."
+
+After they provide the key:
+
+> "Open **Terminal** and paste this:"
 >
 > ```
 > open ~/Library/Application\ Support/Claude/claude_desktop_config.json
 > ```
 >
-> "This will open the config file. You need to add the following inside the `"mcpServers"` section:"
->
-> ```json
-> "tiger_den": {
->   "command": "npx",
->   "args": [
->     "-y",
->     "mcp-remote",
->     "https://tiger-den.vercel.app/api/mcp/mcp",
->     "--header",
->     "Authorization: Bearer <their-api-key>"
->   ]
-> }
-> ```
-
-Replace `<their-api-key>` with the actual key they provided. Give them the complete block with the real key filled in so they can copy-paste it directly.
-
-> "If the file already has other MCP servers, add a comma after the last one and paste this before the closing `}` of `mcpServers`. If the file is empty or doesn't have an `mcpServers` section, the full file should look like:"
+> "This will open the config file. The full file should look like this (replace the entire contents if needed):"
 >
 > ```json
 > {
@@ -207,34 +196,21 @@ Replace `<their-api-key>` with the actual key they provided. Give them the compl
 > }
 > ```
 
-### Tiger Den setup in Cowork (Windows)
+Replace `<their-api-key>` with the actual key they provided. Give them the complete block with the real key filled in so they can copy-paste it directly.
+
+> "If the file already has other MCP servers, add the `tiger_den` block inside the existing `mcpServers` section (with a comma separating it from the other entries)."
+
+**Manual Windows setup:**
 
 The config file is at `%APPDATA%\Claude\claude_desktop_config.json`. Tell them:
 
-> "Great! Now we need to add Tiger Den to your Claude settings. Open **PowerShell** and paste this:"
+> "Open **PowerShell** and paste this:"
 >
 > ```
 > notepad $env:APPDATA\Claude\claude_desktop_config.json
 > ```
 >
-> "This will open the config file. You need to add the following inside the `"mcpServers"` section. **Important:** On Windows you must use `npx.cmd` instead of `npx` — Claude Desktop on Windows doesn't resolve bare command names the same way as macOS."
->
-> ```json
-> "tiger_den": {
->   "command": "npx.cmd",
->   "args": [
->     "-y",
->     "mcp-remote",
->     "https://tiger-den.vercel.app/api/mcp/mcp",
->     "--header",
->     "Authorization: Bearer <their-api-key>"
->   ]
-> }
-> ```
-
-Replace `<their-api-key>` with the actual key they provided. Give them the complete block with the real key filled in so they can copy-paste it directly.
-
-> "If the file is empty or doesn't have an `mcpServers` section, the full file should look like:"
+> "The full file should look like this. **Important:** On Windows you must use `npx.cmd` instead of `npx`."
 >
 > ```json
 > {
@@ -253,16 +229,14 @@ Replace `<their-api-key>` with the actual key they provided. Give them the compl
 > }
 > ```
 
-### After saving (Cowork only)
+Replace `<their-api-key>` with the actual key they provided. After saving, restart Claude Desktop fully.
 
-> "Now **restart Claude Desktop** (quit fully and reopen). Once it's back up, come back to this chat and type `/doctor` to verify everything's working."
-
-**Important:** After they restart and run doctor, confirm Tiger Den is connected. If it still fails, common issues are:
+**Common issues if Tiger Den still doesn't work after manual setup:**
 - API key typo — double-check the key, it should start with `td_`
 - JSON syntax error — offer to review the file if they paste its contents
 - Node not in PATH after install — they may need to restart their terminal first
 
-## Step 5: Role-based skill recommendations
+## Step 4: Role-based skill recommendations
 
 Once all checks pass (either from this flow or from `/doctor`), ask the user about their role:
 
