@@ -1,0 +1,34 @@
+name: Add PR to Project and Set Status
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add PR to project
+        id: add-project
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/orgs/timescale/projects/164
+          github-token: ${{ secrets.PROJECT_PAT }}
+
+      - name: Set status to In review
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_PAT }}
+        run: |
+          gh api graphql -f query='
+            mutation {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: "PVT_kwDOAIkdkc4BQ4OO"
+                itemId: "${{ steps.add-project.outputs.itemId }}"
+                fieldId: "PVTSSF_lADOAIkdkc4BQ4OOzg-3xJY"
+                value: { singleSelectOptionId: "df73e18b" }
+              }) {
+                projectV2Item {
+                  id
+                }
+              }
+            }'
