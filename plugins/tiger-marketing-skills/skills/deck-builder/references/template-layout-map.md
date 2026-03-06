@@ -4,11 +4,12 @@
 
 ## Important: How this template works
 
-This Google Slides template uses **direct shapes** for most content, not formal placeholders. Most layouts only have 1-3 true placeholders (title, subtitle, slide number), while the rest of the content lives in manually positioned shapes.
+This Google Slides template uses **direct shapes** for most content, not formal placeholders. Most layouts only have 1-3 true placeholders (title, subtitle, slide number). However, the **template example slides** (50 slides in the .pptx) contain all the shapes needed, fully positioned and styled.
 
-**What this means for deck generation:**
-- **Programmatic (.pptx) approach:** Use the layouts that have real placeholders (title slides, section headers, title+body). For complex layouts (grids, quote slides, multi-metric), generate the content as structured markdown in speaker notes and flag those slides for manual layout work.
-- **Markdown approach (Cowork):** Map content to the layout types below. The user applies the right layout in Google Slides and places content into the shapes.
+**Generation strategy:** Clone specific template slides and replace text in the cloned shapes rather than creating blank slides from layouts. Shapes are identified by structural role (placeholder index, area, position) rather than by name, because Google Slides exports use opaque shape names that change on re-export.
+
+- **Claude Code (.pptx):** Clone template slides, replace shape text programmatically, then delete the original template slides.
+- **Cowork (markdown):** Map content to the layout types below. The user applies the right layout in Google Slides and places content into the shapes.
 
 ---
 
@@ -92,7 +93,7 @@ This Google Slides template uses **direct shapes** for most content, not formal 
 - Logo grid with product icons (slides 47-48)
 - Comparison table (slide 36)
 
-**Important:** Cannot be populated programmatically — content must be placed manually in shapes. When targeting this layout, output the content as structured text and note which template slide to clone.
+**Generation:** Clone the source slide and replace text in shapes by role. See the Clone Source Slides section below.
 
 ## Layout 6: Flexible Canvas (alt, with slide number)
 
@@ -111,7 +112,7 @@ This Google Slides template uses **direct shapes** for most content, not formal 
 - Button/icon library (slide 46)
 - Checkmark lists — light and dark mode (slides 49-50)
 
-**Important:** Same limitation as Layout 5 — content in direct shapes, not placeholders.
+**Generation:** Clone the source slide and replace text in shapes by role. See the Clone Source Slides section below.
 
 ## Layout 7: Feature Grid
 
@@ -128,6 +129,8 @@ This Google Slides template uses **direct shapes** for most content, not formal 
 - 15-person photo grid with labels (slide 12)
 
 **Use when:** Listing 4-6 features/capabilities, team photos, or any grid of similar items.
+
+**Generation:** Clone slide 6 and replace text in grid item shapes. See the Clone Source Slides section below.
 
 ## Layout 8: Full-Width Quote / Text Block
 
@@ -164,7 +167,7 @@ This Google Slides template uses **direct shapes** for most content, not formal 
 
 **Use when:** Any standard content slide — bullets, tables, diagrams, screenshots, metrics. This is the default choice for most slide content.
 
-**Note:** Body content is placed in direct shapes below the title. For programmatic generation, set the title via placeholder idx=0 and provide body content as structured text in speaker notes for manual placement.
+**Generation:** Clone the specific template slide matching the content type (bullets → slide 23, timeline → slide 43, etc.) and replace text in shapes by role. Title is set via placeholder idx=0. Body and other shapes are identified by area and position. See the Clone Source Slides section below.
 
 ## Layout 10: Large Title (unused)
 
@@ -242,30 +245,321 @@ This Google Slides template uses **direct shapes** for most content, not formal 
 
 ## Quick Reference: Layout Selection Guide
 
-| Purpose | Recommended Layout | Programmatic? |
-|---------|-------------------|---------------|
-| Opening / closing slide | Layout 1 (dark, centered) | Yes |
-| Alt title slide (light) | Layout 2 or 3 | Yes |
-| Section divider | Layout 12 or 15 | Yes |
-| Bold statement / key quote | Layout 4 (right-aligned) | Yes |
-| Content with bullets | Layout 9 (title + content) | Title only; body = manual shapes |
-| Content with Tiger Data header | Layout 11 (title + body) | Yes — full placeholder support |
-| Big number / key metric | Layout 6 (clone slides 18-19) | No — clone and edit |
-| Feature grid (4-6 items) | Layout 7 (clone slide 6) | No — clone and edit |
-| Customer quote | Layout 5 (clone slide 28 or 30) | No — clone and edit |
-| Comparison / before-after | Layout 5 (clone slide 29) | No — clone and edit |
-| Table / data | Layout 9 (clone slide 35) | No — clone and edit |
-| Timeline / process | Layout 9 (clone slide 43-44) | No — clone and edit |
-| Screenshot + caption | Layout 9 (clone slide 38) | No — clone and edit |
-| Agenda | Layout 13 (clone slide 9) | No — clone and edit |
-| Logo grid | Layout 9 (clone slide 33) | No — clone and edit |
+| Purpose | Recommended Layout | Strategy | Clone source (0-indexed) |
+|---------|-------------------|----------|--------------------------|
+| Opening / closing slide | Layout 1 (dark, centered) | Placeholder | n/a |
+| Alt title slide (light) | Layout 2 or 3 | Placeholder | n/a |
+| Section divider | Layout 12 or 15 | Placeholder | n/a |
+| Bold statement / key quote | Layout 4 (right-aligned) | Placeholder | n/a |
+| Content with Tiger Data header | Layout 11 (title + body) | Placeholder | n/a |
+| Content with bullets | Layout 9 (clone slide 23) | Clone + replace | 22 |
+| Big number / key metric | Layout 6 (clone slide 18) | Clone + replace | 17 |
+| Feature grid (4-6 items) | Layout 7 (clone slide 6) | Clone + replace | 5 |
+| Customer quotes (3-up) | Layout 5 (clone slide 28) | Clone + replace | 27 |
+| Table / data | Layout 9 (clone slide 35) | Clone + replace | 34 |
+| Timeline / process | Layout 9 (clone slide 43) | Clone + replace | 42 |
+| Screenshot + caption | Layout 9 (clone slide 38) | Clone + replace | 37 |
+| 3-column comparison | Layout 9 (clone slide 39) | Clone + replace | 38 |
+| Agenda | Layout 13 (clone slide 9) | Clone + replace | 8 |
+| Logo grid | Layout 9 (clone slide 33) | Clone + replace | 32 |
 
-### Programmatic Generation Strategy
+---
 
-For Claude Code .pptx generation, use this two-tier approach:
+## Programmatic Generation Strategy
 
-1. **Tier 1 — Fully programmatic:** Layouts 1-4 (title slides), 11 (title+body), 12/15 (section dividers). Set content via `slide.placeholders[idx].text`. These layouts have real placeholders that python-pptx can fill.
+For Claude Code .pptx generation, use a unified **clone-and-replace** approach:
 
-2. **Tier 2 — Clone and annotate:** For all other slide types, clone the closest example slide from the template (by slide index) and put replacement content in the speaker notes with clear markers like `[REPLACE: Title] New title text here`. Flag these slides in the output summary so the user knows which ones need manual touch-up.
+1. **Placeholder slides (layouts 0-4, 11, 12, 15):** Create via `prs.slides.add_slide(layout)` and set text via `slide.placeholders[idx].text`. These layouts have real placeholders.
 
-This hybrid approach gets 60-70% of a deck built programmatically and clearly marks what needs manual finishing.
+2. **All other slides:** Clone the specific template slide listed in the Clone Source table above using `duplicate_slide()`. Then identify shapes by role and replace text programmatically using `replace_shape_text()`.
+
+3. **After all slides are generated:** Remove the original 50 template slides by iterating in reverse order and deleting each one.
+
+4. **Fallback:** If cloning fails (e.g., python-pptx internal API changes), fall back to creating a slide from the layout and putting body content in speaker notes with `[REPLACE: Body]` markers. Report which slides need manual touch-up.
+
+### Helper functions
+
+#### `duplicate_slide(prs, source_slide)`
+
+Deep-copy a template slide, preserving all shapes, images, and formatting. Uses clear-and-append (not `replace()`) to avoid losing shapes:
+
+```python
+import copy
+
+def duplicate_slide(prs, source_slide):
+    dest = prs.slides.add_slide(source_slide.slide_layout)
+    dest_spTree = dest.shapes._spTree
+    # Clear layout-inherited shapes
+    for child in list(dest_spTree):
+        dest_spTree.remove(child)
+    # Copy all children from source
+    for child in source_slide.shapes._spTree:
+        dest_spTree.append(copy.deepcopy(child))
+    # Copy relationships (images, media) but skip notes
+    for rel in source_slide.part.rels.values():
+        if "notesSlide" in rel.reltype:
+            continue
+        if rel.is_external:
+            dest.part.rels.get_or_add_ext_rel(rel.reltype, rel.target_ref)
+        else:
+            dest.part.rels.get_or_add(rel.reltype, rel.target_part)
+    return dest
+```
+
+#### `replace_shape_text(shape, new_text)`
+
+Replace text in a shape while preserving the first run's formatting. Supports multi-line text via `\n` (each line becomes a new paragraph cloned from the first):
+
+```python
+def replace_shape_text(shape, new_text):
+    if not shape.has_text_frame:
+        return
+    tf = shape.text_frame
+    ns = '{http://schemas.openxmlformats.org/drawingml/2006/main}'
+    # Save first paragraph XML as formatting template
+    template_p = copy.deepcopy(tf.paragraphs[0]._p) if tf.paragraphs else None
+    # Remove all existing paragraphs
+    for p in list(tf._txBody.iterchildren(f'{ns}p')):
+        tf._txBody.remove(p)
+    # Create one paragraph per line, cloned from template
+    for line in new_text.split('\n'):
+        if template_p is not None:
+            new_p = copy.deepcopy(template_p)
+            for r in new_p.findall(f'.//{ns}r'):
+                for t in r.findall(f'{ns}t'):
+                    t.text = ''
+            runs = new_p.findall(f'.//{ns}r')
+            if runs:
+                t_els = runs[0].findall(f'{ns}t')
+                if t_els:
+                    t_els[0].text = line
+        else:
+            new_p = etree.SubElement(tf._txBody, f'{ns}p')
+            r = etree.SubElement(new_p, f'{ns}r')
+            t = etree.SubElement(r, f'{ns}t')
+            t.text = line
+        tf._txBody.append(new_p)
+```
+
+#### `replace_bullet_list(shape, items)`
+
+Replace bullet list content, preserving paragraph formatting:
+
+```python
+def replace_bullet_list(shape, items):
+    if not shape.has_text_frame or not items:
+        return
+    tf = shape.text_frame
+    template_p = copy.deepcopy(tf.paragraphs[0]._p)
+    # Clear existing paragraphs
+    for p in list(tf._txBody.iterchildren(
+        '{http://schemas.openxmlformats.org/drawingml/2006/main}p'
+    )):
+        tf._txBody.remove(p)
+    # Add new paragraphs from template
+    ns = 'http://schemas.openxmlformats.org/drawingml/2006/main'
+    for item in items:
+        new_p = copy.deepcopy(template_p)
+        runs = new_p.findall(f'.//{{{ns}}}r')
+        if runs:
+            for t in runs[0].findall(f'{{{ns}}}t'):
+                t.text = item
+            for run in runs[1:]:
+                for t in run.findall(f'{{{ns}}}t'):
+                    t.text = ''
+        tf._txBody.append(new_p)
+```
+
+#### `find_body_shape(slide)`
+
+Find the body text shape (largest text area, excluding title and slide number):
+
+```python
+def find_body_shape(slide):
+    candidates = []
+    for shape in slide.shapes:
+        if not shape.has_text_frame:
+            continue
+        if shape.is_placeholder:
+            idx = shape.placeholder_format.idx
+            if idx in (0, 12, 2):  # title, slide number
+                continue
+        candidates.append(shape)
+    if not candidates:
+        return None
+    return max(candidates, key=lambda s: (s.width or 0) * (s.height or 0))
+```
+
+#### `find_text_shapes_by_position(slide)`
+
+Find non-title, non-slide-number text shapes sorted by position:
+
+```python
+def find_text_shapes_by_position(slide):
+    shapes = []
+    for shape in slide.shapes:
+        if not shape.has_text_frame:
+            continue
+        if shape.is_placeholder:
+            idx = shape.placeholder_format.idx
+            if idx in (0, 12, 2):
+                continue
+        shapes.append(shape)
+    return sorted(shapes, key=lambda s: (s.top or 0, s.left or 0))
+```
+
+#### `delete_shape(slide, shape)`
+
+Remove a shape from a slide (used to delete unused grid slots):
+
+```python
+def delete_shape(slide, shape):
+    shape._element.getparent().remove(shape._element)
+```
+
+#### `delete_slide(prs, slide_index)`
+
+Remove a slide by index:
+
+```python
+def delete_slide(prs, slide_index):
+    rId = prs.slides._sldIdLst[slide_index].get(
+        '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id'
+    )
+    prs.part.drop_rel(rId)
+    prs.slides._sldIdLst.remove(prs.slides._sldIdLst[slide_index])
+```
+
+---
+
+## Clone Source Slides: Shape Role Map
+
+These are the specific template slides to clone for each slide type. After cloning, use the helper functions above to find and replace text in shapes.
+
+### Slide 23 — Content with Bullets (Layout 9)
+
+**Clone source index:** 22 (0-indexed)
+
+| Role | How to find | Replacement |
+|------|-------------|-------------|
+| Title | `slide.placeholders[0]` (ph_idx=0) | `placeholders[0].text = "Title"` |
+| Body bullets | `find_body_shape(slide)` — largest text shape (ph_idx=4294967295) | `replace_bullet_list(shape, items)` |
+| Slide number | ph_idx=12 | Leave as-is |
+
+### Slide 6 — Feature Grid (Layout 7)
+
+**Clone source index:** 5
+
+The grid has a **sidebar title** on the left, then a **2-column x 3-row** grid of items. The first row is structured differently from rows 2-3.
+
+**Grid structure** (shapes sorted by top, left):
+
+| Position | Role | Size | Notes |
+|----------|------|------|-------|
+| (0.34, 2.55) | Sidebar title | 2.24x0.92 | Left panel, x < 3.0. Set to grid heading. |
+| (3.52, 0.64) | Left col header | 2.20x0.44 | **Item 1 title** (short, bold) |
+| (6.50, 0.64) | Right col header | 1.99x0.71 | **Item 4 title** (short, bold) |
+| (3.52, 1.41) | Left col row 1 desc | 2.64x0.72 | **Item 1 description** (separate from title) |
+| (6.50, 1.41) | Right col row 1 body | 2.62x1.30 | **Item 4 description** — single-paragraph, desc only |
+| (3.52, 2.36) | Left col row 2 | 2.64x1.30 | **Item 2** — combined title + description (2 paragraphs) |
+| (6.50, 2.68) | Right col row 2 | 2.55x1.30 | **Item 5** — combined title + description |
+| (3.52, 3.99) | Left col row 3 | 2.64x1.30 | **Item 3** — combined title + description |
+| (6.50, 3.99) | Right col row 3 | 2.55x1.30 | **Item 6** — combined title + description |
+
+**Important:** The column header shapes are styled as **category labels** (large, bold), not individual items. The original template uses them to group features (e.g., "Postgres Made Easier" / "Postgres Made More Reliable"). Always assign short category labels to headers, then distribute items into the body shapes below.
+
+**Replacement strategy for N items:**
+1. Set sidebar title via `replace_shape_text(sidebar, "Grid heading")`
+2. Group items into 2 categories. Set left and right col headers to the **category labels** (NOT individual item names)
+3. Distribute items into body slots: row 1 descs (2 slots) + rows 2-3 bodies (4 slots) = 6 item slots total
+4. Row 1 desc slots: `replace_shape_text(shape, "Item Title\nItem Description")` — combined title + description
+5. Row 2-3 body slots: `replace_shape_text(shape, "Item Title\nItem Description")` — combined title + description
+6. Fill left column top-to-bottom, then right column top-to-bottom
+7. If fewer than 6 items, delete unused shapes from the bottom up. If more, split across slides.
+
+| Role | How to find | Replacement |
+|------|-------------|-------------|
+| Sidebar title | Text shape with x < 3.0" | `replace_shape_text(shape, "Heading")` |
+| Col headers (2) | Text shapes at y≈0.64", sorted by left | `replace_shape_text(shape, "Item title")` |
+| Row 1 descs (2) | Text shapes at y≈1.41", sorted by left | `replace_shape_text(shape, "Description")` |
+| Row 2-3 bodies (4) | Text shapes at y > 2.0", sorted by (top, left) | Combined: `replace_shape_text(shape, "Title\nDescription")` |
+| Slide number | ph_idx=12 | Leave as-is |
+
+### Slide 18 — Big Number / Key Metric (Layout 6)
+
+**Clone source index:** 17
+
+| Role | How to find | Replacement |
+|------|-------------|-------------|
+| Big number | `find_body_shape(slide)` — largest text shape (ph_idx=4294967295, ~22 sq in) | `replace_shape_text(shape, "100X")` |
+| Caption | Second text shape by area (TEXT_BOX) | `replace_shape_text(shape, "Caption text")` |
+| Slide number | ph_idx=12 | Leave as-is |
+
+### Slide 28 — Customer Quotes 3-up (Layout 5)
+
+**Clone source index:** 27
+
+| Role | How to find | Replacement |
+|------|-------------|-------------|
+| Header | `find_body_shape(slide)` — largest text shape (ph_idx=4294967295) | `replace_shape_text(shape, "Header")` |
+| Quote text boxes (3) | TEXT_BOX shapes sorted by left position (at y≈3.85") | `replace_shape_text(shape, "Quote text")` per box |
+| Photos (3) | PICTURE shapes | Leave as template photos or note for manual replacement |
+| Slide number | ph_idx=12 | Leave as-is |
+
+### Slide 35 — Data Table (Layout 9)
+
+**Clone source index:** 34
+
+| Role | How to find | Replacement |
+|------|-------------|-------------|
+| Title | `slide.placeholders[0]` (ph_idx=0) | `placeholders[0].text = "Title"` |
+| Table | Shape where `shape.has_table == True` | Access cells via `shape.table.cell(row, col).text` |
+| Slide number | ph_idx=12 | Leave as-is |
+
+### Slide 38 — Screenshot + Caption (Layout 9)
+
+**Clone source index:** 37
+
+| Role | How to find | Replacement |
+|------|-------------|-------------|
+| Title | `slide.placeholders[0]` (ph_idx=0) | `placeholders[0].text = "Title"` |
+| Description | `find_body_shape(slide)` — largest non-title text shape (ph_idx=4294967295) | `replace_shape_text(shape, "Description")` |
+| Screenshot | PICTURE shape | Leave as placeholder or note for manual replacement |
+| Slide number | ph_idx=12 | Leave as-is |
+
+### Slide 39 — 3-Column Comparison (Layout 9)
+
+**Clone source index:** 38
+
+| Role | How to find | Replacement |
+|------|-------------|-------------|
+| Title | `slide.placeholders[0]` (ph_idx=0) | `placeholders[0].text = "Title"` |
+| Metric numbers (3) | Small TEXT_BOX shapes at y≈2.59", sorted by left | `replace_shape_text(shape, "24%")` per box |
+| Column descriptions (3) | Larger TEXT_BOX shapes at y≈3.94", sorted by left | `replace_shape_text(shape, "Description")` per box |
+| Column images (3) | PICTURE shapes | Leave as placeholders |
+| Slide number | ph_idx=12 | Leave as-is |
+
+### Slide 43 — Timeline / Process (Layout 9)
+
+**Clone source index:** 42
+
+| Role | How to find | Replacement |
+|------|-------------|-------------|
+| Title | `slide.placeholders[0]` (ph_idx=0) | `placeholders[0].text = "Title"` |
+| Body text | `find_body_shape(slide)` — largest non-title text shape (ph_idx=4294967295) | `replace_shape_text(shape, "Body")` |
+| Timeline headings (3) | TEXT_BOX shapes at y≈3.60", sorted by left | `replace_shape_text(shape, "Phase 1")` |
+| Timeline details (3) | TEXT_BOX shapes at y≈3.85", sorted by left | `replace_shape_text(shape, "Detail")` |
+| Timeline labels (3) | TEXT_BOX shapes at y≈4.25", sorted by left | `replace_shape_text(shape, "Q1")` |
+| Slide number | ph_idx=12 | Leave as-is |
+
+**Note:** The timeline has exactly 3 columns with icons. If you need more or fewer phases, note it for manual adjustment.
+
+### Slide 9 — Agenda (Layout 13)
+
+**Clone source index:** 8
+
+| Role | How to find | Replacement |
+|------|-------------|-------------|
+| Numbers column | First TEXT_BOX by left position (x≈3.0") | Multi-line text: "01\n\n02\n\n03..." |
+| Items column | Second TEXT_BOX by left position (x≈3.5") | Multi-line text: "Item 1\n\nItem 2\n\nItem 3..." |
+| Slide number | ph_idx=12 | Leave as-is |

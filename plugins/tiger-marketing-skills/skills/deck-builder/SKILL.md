@@ -102,19 +102,25 @@ Detect the runtime and generate the appropriate output.
    - Use the gdrive CLI or Google Drive tools to locate and download `deck-template.pptx` to `/tmp/deck-template.pptx`
    - If neither source has it, tell the user: "Could not find `deck-template.pptx`. Place it in the skill directory or the shared Drive folder."
 
-3. **Use a two-tier generation strategy.** The template uses mostly direct shapes, not formal placeholders. See the "Programmatic Generation Strategy" section in the template layout map for details.
+3. **Use a clone-and-replace generation strategy.** The template has 50 example slides with shapes already positioned and styled. See the "Programmatic Generation Strategy" and "Clone Source Slides" sections in the template layout map for details and helper functions.
 
-   **Tier 1 — Fully programmatic (layouts with real placeholders):**
-   - Title slides (layouts 0-4): set `slide.placeholders[0].text` (title) and `slide.placeholders[1].text` (subtitle)
-   - Title + body (layout 11): set placeholders 0 (title) and 1 (body)
-   - Section dividers (layouts 12, 15): set placeholders 0 (section number) and 2 (section title)
-   - Always add speaker notes: `slide.notes_slide.notes_text_frame.text = notes`
+   **Step A — Load the template and note the original slide count:**
+   ```python
+   prs = Presentation(template_path)
+   template_slide_count = len(prs.slides)
+   ```
 
-   **Tier 2 — Clone and annotate (complex layouts without placeholders):**
-   - For content slides (layout 9), stat slides (layout 6), grids (layout 7), quotes (layout 5), etc.: clone the closest example slide from the template by copying it, then put replacement content in the speaker notes with markers like `[REPLACE: Title] New title here` and `[REPLACE: Body] New content here`
-   - To clone a template slide: identify the source slide index from the template layout map, then duplicate it using `prs.slides.add_slide(source_slide.slide_layout)` and copy shapes as needed
+   **Step B — For each slide in the deck plan:**
 
-4. **Report the result**: file path, total slide count, how many were fully programmatic vs. needing manual touch-up. List the specific slides that need manual editing and what to change. Suggest the user open the .pptx in Google Slides to finish those slides.
+   - **Placeholder slides (layouts 0-4, 11, 12, 15):** Use `prs.slides.add_slide(layout)` and set `slide.placeholders[idx].text`. These layouts have real placeholders.
+   - **All other slides:** Clone the source template slide using `duplicate_slide(prs, source_slide)`. Then use `find_body_shape()` or `find_text_shapes_by_position()` to locate shapes by role and `replace_shape_text()` or `replace_bullet_list()` to set new content. Refer to the Clone Source Slides section in the template layout map for the source index and shape roles for each slide type.
+   - **Always set speaker notes:** `slide.notes_slide.notes_text_frame.text = notes`
+
+   **Step C — Remove template slides:** After generating all new slides, delete the original template slides by iterating in reverse from `template_slide_count - 1` down to 0 using `delete_slide(prs, i)`.
+
+   **Fallback:** If cloning fails (e.g., python-pptx internal API changes), fall back to creating a slide from the layout and putting body content in speaker notes with `[REPLACE: Body]` markers. Report which slides need manual touch-up.
+
+4. **Report the result**: file path, total slide count, and whether any slides fell back to speaker-notes mode. Suggest the user open the .pptx in Google Slides to review formatting and replace any placeholder images.
 
 #### Cowork: Structured markdown output
 
