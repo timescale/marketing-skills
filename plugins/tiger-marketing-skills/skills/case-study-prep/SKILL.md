@@ -1,7 +1,7 @@
 ---
 name: case-study-prep
 platforms: [cowork, claude-code]
-description: "Create Tiger Data case study interview prep documents. Gathers customer information from Slack (#ask-eon channel via @eon bot) and user-provided Google Docs, then aligns all known information against the 8 standard Tiger Data Case Study Questions, producing a .docx with status ratings (Complete/Partial/Missing), draft answers, gap analysis, a 30-minute interview guide, and draft pull quotes. MANDATORY TRIGGERS: case study, interview prep, case study prep, customer story, customer interview, case study questions, ClickHouse takeout, competitive win story. Use when the user asks to prepare for a customer case study interview, create a case study prep doc, or align existing customer notes against the Tiger Data case study questions template."
+description: "Create Tiger Data case study interview prep documents. Gathers customer information via DM to the @eon Slack bot and user-provided Google Docs, then aligns all known information against the 8 standard Tiger Data Case Study Questions, producing a .docx with status ratings (Complete/Partial/Missing), draft answers, gap analysis, a 30-minute interview guide, and draft pull quotes. MANDATORY TRIGGERS: case study, interview prep, case study prep, customer story, customer interview, case study questions, ClickHouse takeout, competitive win story. Use when the user asks to prepare for a customer case study interview, create a case study prep doc, or align existing customer notes against the Tiger Data case study questions template."
 references:
   - case-study/case-study-questions
   - case-study/output-format
@@ -21,13 +21,14 @@ Determine from the user:
 - **Context documents** (optional): Google Doc URLs, uploaded files, or other sources containing existing customer notes
 - If no context docs are provided, ask the user
 
-### Step 2: Gather information from Slack
+### Step 2: Gather information from Slack via Eon
 
-Search the **#ask-eon** channel (ID: C098FT3R3RP) for the @eon bot (ID: U095RJGF6TC):
+Send a direct message to the **eon** bot (user ID: `U095RJGF6TC`):
 
-1. Send a message to #ask-eon: `<@U095RJGF6TC> Summarize current use case and metrics for customer {Company Name}`
-2. Wait ~30 seconds, then read the thread to capture eon's response
-3. If eon's response is incomplete or the thread hasn't been answered yet, wait and retry
+1. Send a DM to eon (use the bot's user ID as the `channel_id`): `Summarize current use case and metrics for customer {Company Name}`
+2. Capture the `message_ts` and `channel_id` from the send response
+3. Wait ~30 seconds, then read the thread using the returned `channel_id` and `message_ts` to capture eon's response
+4. If eon's response is incomplete or the thread hasn't been answered yet, wait and retry
 
 ### Step 3: Fetch context documents
 
