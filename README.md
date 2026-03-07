@@ -93,6 +93,7 @@ To update: `git pull`.
 | **content-reviewer** | Cowork, Claude Code | Evaluate marketing content drafts against Tiger Data's quality rubrics |
 | **deck-builder** | Cowork, Claude Code | Turn any document into a branded slide deck. Generates .pptx in Claude Code, structured markdown in Cowork. |
 | **de-slop** | Cowork, Claude Code | Strip AI writing patterns from text to make it sound natural and human-written |
+| **event-brief-planner** | Cowork, Claude Code | Plan and write complete event campaign briefs -- event overview, landing pages, emails, social posts, ads, banners, newsletters, and KPI tracking |
 | **internal-linking-optimizer** | Claude Code | Analyze and optimize internal link structure to improve site architecture, distribute page authority, and help search engines understand content relationships |
 | **seo-meta-optimizer** | Cowork, Claude Code | Optimize title tags and meta descriptions at scale (CSV input or URL crawling) |
 | **ghost-paper** | Cowork, Claude Code | Turn markdown into styled HTML reports with interactive charts and KPI strips. Invoke with `/ghost-paper` — only auto-triggers when you mention it by name. |
