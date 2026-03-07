@@ -271,12 +271,13 @@ If the user mentions a specific sender for emails (e.g., "these should come from
 ## Hand-off
 
 After the brief is complete, offer to:
+- **Run content-reviewer on the landing page and email copy.** These are the longest pieces and benefit most from a quality review. Do not run content-reviewer on banner copy, newsletter blurbs, or social posts since those are too short for a meaningful evaluation. Frame it as: "Want me to run the landing page and email copy through content-reviewer before we finalize?"
 - **Refine individual assets** using brand-voice-writer (one asset at a time)
 - **Adjust any section** based on feedback
 - **Generate the KPI tracking section** if it was skipped
 - **Plan a follow-up nurture sequence** for event leads using email-nurture-planner
 
-Do not auto-trigger brand-voice-writer. The brief is meant to be reviewed and iterated on before handing off for refinement. Wait for the user to confirm the brief looks good.
+Do not auto-trigger content-reviewer or brand-voice-writer. The brief is meant to be reviewed and iterated on before handing off. Wait for the user to confirm the brief looks good.
 
 ### Editing the brief
 
